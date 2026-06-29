@@ -1,6 +1,6 @@
 <template>
-  <div class="phone-container">
-    <div class="phone-screen">
+  <div class="phone-shell">
+    <div class="phone-frame">
       <div class="status-bar">
         <span>9:41</span>
         <span>5G 92%</span>
@@ -8,7 +8,7 @@
       <div class="page-content">
         <router-view />
       </div>
-      <div class="bottom-nav">
+      <nav class="bottom-nav" aria-label="患者端主导航">
         <button class="nav-item" :class="{ active: curRoute === '/patient/home' }" @click="goTo('/patient/home')">
           <span class="nav-icon">⌂</span>
           <span class="nav-label">首页</span>
@@ -29,7 +29,7 @@
           <span class="nav-icon">○</span>
           <span class="nav-label">我的</span>
         </button>
-      </div>
+      </nav>
     </div>
   </div>
 </template>
@@ -54,40 +54,39 @@ export default {
 </script>
 
 <style scoped>
-.phone-container {
+.phone-shell {
   display: flex;
   justify-content: center;
   align-items: center;
   min-height: 100vh;
-  padding: 18px;
+  padding: 16px;
   background:
-    radial-gradient(circle at 20% 10%, rgba(47, 128, 209, 0.16), transparent 28%),
-    linear-gradient(135deg, #eef7ff 0%, #f7fbff 48%, #e9f4ff 100%);
+    radial-gradient(circle at top, rgba(47, 128, 209, 0.18), transparent 30%),
+    linear-gradient(160deg, #eef7ff 0%, #f8fbff 52%, #e9f4ff 100%);
 }
 
-.phone-screen {
-  width: min(390px, 100vw - 28px);
-  height: min(844px, 100vh - 36px);
+.phone-frame {
+  width: min(390px, 100vw - 24px);
+  height: min(844px, 100vh - 32px);
   min-height: 720px;
-  background: var(--page-bg);
-  border: 1px solid rgba(255, 255, 255, 0.9);
   border-radius: 32px;
-  box-shadow: 0 24px 60px rgba(42, 96, 148, 0.22);
   overflow: hidden;
   display: flex;
   flex-direction: column;
-  position: relative;
+  border: 1px solid rgba(255, 255, 255, 0.9);
+  background: var(--page-bg);
+  box-shadow: 0 24px 60px rgba(42, 96, 148, 0.22);
 }
 
 .status-bar {
+  flex: 0 0 auto;
   display: flex;
   justify-content: space-between;
   padding: 12px 24px 8px;
   font-size: 12px;
   font-weight: 700;
   color: var(--ink-muted);
-  background: rgba(255, 255, 255, 0.84);
-  flex-shrink: 0;
+  background: rgba(255, 255, 255, 0.76);
 }
 
 .page-content {
@@ -103,13 +102,13 @@ export default {
 }
 
 .bottom-nav {
+  flex: 0 0 auto;
   display: grid;
   grid-template-columns: repeat(5, 1fr);
   gap: 4px;
-  border-top: 1px solid rgba(221, 234, 247, 0.9);
-  background: rgba(255, 255, 255, 0.96);
   padding: 8px 10px 10px;
-  flex-shrink: 0;
+  background: rgba(255, 255, 255, 0.82);
+  border-top: 1px solid rgba(221, 234, 247, 0.9);
 }
 
 .nav-item {
@@ -145,7 +144,7 @@ export default {
 
 .nav-item.active {
   color: var(--medical-blue);
-  background: var(--medical-blue-soft);
+  background: rgba(234, 245, 255, 0.9);
 }
 
 .nav-item.active .nav-icon {

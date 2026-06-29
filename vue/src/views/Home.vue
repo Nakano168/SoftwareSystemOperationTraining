@@ -1,35 +1,58 @@
 <template>
   <div class="home-page">
-    <section class="hero-card">
-      <div>
-        <div class="eyebrow">患者服务平台</div>
-        <h2>{{ timeGreeting }}，{{ realName || '患者' }}</h2>
-        <p>预约挂号、报告查询、费用缴纳，一站式管理就医事项。</p>
+    <section class="hero-shell">
+      <div class="hero-card">
+        <div class="hero-copy">
+          <div class="eyebrow">患者服务平台</div>
+          <h2>{{ timeGreeting }}，{{ realName || '患者' }}</h2>
+          <p>挂号、报告、缴费、病历都放在一个更顺手的入口里。</p>
+        </div>
+        <div class="avatar">{{ (realName || '患').charAt(0) }}</div>
       </div>
-      <div class="avatar">{{ (realName || '患').charAt(0) }}</div>
-    </section>
-
-    <section class="quick-actions">
-      <button class="action-card primary" @click="goTo('/patient/appointment')">
-        <span class="action-symbol">+</span>
-        <span>预约挂号</span>
-      </button>
-      <button class="action-card" @click="$router.push('/patient/my-appointments')">
-        <span class="action-symbol">≡</span>
-        <span>我的挂号</span>
-      </button>
-      <button class="action-card" @click="$router.push('/patient/medical-records')">
-        <span class="action-symbol">病</span>
-        <span>病历查询</span>
-      </button>
-      <button class="action-card" @click="$router.push('/patient/fees')">
-        <span class="action-symbol">¥</span>
-        <span>在线缴费</span>
-      </button>
     </section>
 
     <section class="patient-content">
-      <div class="patient-section-title">快捷功能</div>
+      <div class="patient-section-title priority-title">
+        <span>待办事项</span>
+        <span class="section-hint">优先处理</span>
+      </div>
+      <button class="todo-card patient-card priority-card" v-if="unpaidCount > 0" @click="$router.push('/patient/fees')">
+        <span class="todo-dot warning">!</span>
+        <span>您有 {{ unpaidCount }} 笔待缴费订单</span>
+        <span class="todo-arrow">›</span>
+      </button>
+      <div class="todo-card patient-card priority-card" v-else>
+        <span class="todo-dot success">✓</span>
+        <span>暂无待办事项</span>
+      </div>
+
+      <div class="patient-section-title">
+        <span>快捷功能</span>
+        <span class="section-hint">常用操作</span>
+      </div>
+      <div class="quick-actions">
+        <button class="action-card primary" @click="goTo('/patient/appointment')">
+          <span class="action-symbol">+</span>
+          <span>预约挂号</span>
+        </button>
+        <button class="action-card" @click="$router.push('/patient/my-appointments')">
+          <span class="action-symbol">≡</span>
+          <span>我的挂号</span>
+        </button>
+        <button class="action-card" @click="$router.push('/patient/medical-records')">
+          <span class="action-symbol">病</span>
+          <span>病历查询</span>
+        </button>
+        <button class="action-card" @click="$router.push('/patient/fees')">
+          <span class="action-symbol">¥</span>
+          <span>在线缴费</span>
+        </button>
+      </div>
+
+      <div class="patient-section-title">
+        <span>功能入口</span>
+        <span class="section-hint">常看常用</span>
+      </div>
       <div class="feature-grid">
         <button class="feature-card patient-card" @click="$router.push('/patient/prescriptions')">
           <span class="feature-icon">Rx</span>
@@ -49,16 +72,6 @@
         </button>
       </div>
 
-      <div class="patient-section-title">待办事项</div>
-      <button class="todo-card patient-card" v-if="unpaidCount > 0" @click="$router.push('/patient/fees')">
-        <span class="todo-dot warning">!</span>
-        <span>您有 {{ unpaidCount }} 笔待缴费订单</span>
-        <span class="todo-arrow">›</span>
-      </button>
-      <div class="todo-card patient-card" v-else>
-        <span class="todo-dot success">✓</span>
-        <span>暂无待办事项</span>
-      </div>
     </section>
   </div>
 </template>
@@ -108,18 +121,60 @@ export default {
 <style scoped>
 .home-page {
   min-height: 100%;
-  background: var(--page-bg);
+  padding: 0 0 18px;
+  background:
+    radial-gradient(circle at top right, rgba(47, 128, 209, 0.12), transparent 34%),
+    linear-gradient(180deg, #f9fcff 0%, var(--page-bg) 34%, #eef6ff 100%);
+}
+
+.hero-shell {
+  position: relative;
+  padding: 12px 12px 0;
 }
 
 .hero-card {
+  position: relative;
+  z-index: 2;
   margin: 0;
-  padding: 24px 20px 38px;
-  color: #fff;
+  padding: 24px 20px 26px;
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
   gap: 16px;
-  background: linear-gradient(135deg, var(--medical-blue), var(--medical-blue-dark));
+  color: #fff;
+  border-radius: 28px;
+  overflow: hidden;
+  background:
+    linear-gradient(135deg, rgba(47, 128, 209, 0.98), rgba(31, 102, 173, 0.98)),
+    linear-gradient(180deg, #2f80d1, #1f66ad);
+  box-shadow: 0 22px 42px rgba(31, 102, 173, 0.28);
+  backdrop-filter: blur(10px);
+}
+
+.hero-card::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -1px;
+  height: 34px;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0), rgba(245, 250, 255, 0.26));
+}
+
+.hero-card::after {
+  content: "";
+  position: absolute;
+  right: -38px;
+  top: -42px;
+  width: 140px;
+  height: 140px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.hero-copy {
+  position: relative;
+  z-index: 1;
 }
 
 .eyebrow {
@@ -130,7 +185,7 @@ export default {
 }
 
 .hero-card h2 {
-  font-size: 24px;
+  font-size: 25px;
   line-height: 1.25;
   margin-bottom: 8px;
 }
@@ -143,6 +198,8 @@ export default {
 }
 
 .avatar {
+  position: relative;
+  z-index: 1;
   width: 54px;
   height: 54px;
   border-radius: 18px;
@@ -156,7 +213,7 @@ export default {
 }
 
 .quick-actions {
-  margin: -18px 16px 0;
+  margin: 0;
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   gap: 10px;
@@ -165,9 +222,10 @@ export default {
 .action-card {
   min-height: 76px;
   border: 0;
-  border-radius: 16px;
-  background: #fff;
-  box-shadow: 0 8px 24px rgba(25, 74, 150, 0.08);
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.96);
+  border: 1px solid rgba(226, 237, 249, 0.88);
+  box-shadow: 0 8px 18px rgba(25, 74, 150, 0.06);
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -181,7 +239,7 @@ export default {
 
 .action-card.primary {
   color: #fff;
-  background: linear-gradient(135deg, var(--medical-blue), var(--medical-blue-dark));
+  background: linear-gradient(135deg, #2f80d1, #1f66ad);
 }
 
 .action-symbol {
@@ -196,29 +254,43 @@ export default {
 }
 
 .patient-content {
-  padding-top: 18px;
+  padding: 16px 12px 0;
+}
+
+.priority-title {
+  padding-top: 6px;
 }
 
 .patient-section-title {
-  padding: 0 16px 10px;
+  padding: 16px 2px 10px;
   font-size: 15px;
   font-weight: 800;
   color: var(--ink-strong);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.section-hint {
+  font-size: 12px;
+  color: var(--ink-muted);
+  font-weight: 700;
 }
 
 .feature-grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   gap: 10px;
-  padding: 0 16px;
+  padding: 0;
 }
 
 .feature-card {
-  min-height: 84px;
+  min-height: 90px;
   border: 0;
-  border-radius: 16px;
-  background: #fff;
-  box-shadow: 0 8px 24px rgba(25, 74, 150, 0.08);
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.96);
+  border: 1px solid rgba(226, 237, 249, 0.88);
+  box-shadow: 0 8px 18px rgba(25, 74, 150, 0.06);
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -244,12 +316,13 @@ export default {
 }
 
 .todo-card {
-  margin: 0 16px;
+  margin: 0;
   min-height: 58px;
   border: 0;
-  border-radius: 16px;
-  background: #fff;
-  box-shadow: 0 8px 24px rgba(25, 74, 150, 0.08);
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.96);
+  border: 1px solid rgba(226, 237, 249, 0.88);
+  box-shadow: 0 8px 18px rgba(25, 74, 150, 0.06);
   padding: 14px 15px;
   display: flex;
   align-items: center;
@@ -257,6 +330,11 @@ export default {
   color: var(--ink-main);
   font-size: 14px;
   font-weight: 700;
+}
+
+.priority-card {
+  width: 100%;
+  margin-bottom: 4px;
 }
 
 .todo-dot {

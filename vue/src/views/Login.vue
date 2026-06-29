@@ -1,18 +1,18 @@
 <template>
   <div class="login-shell">
-    <div class="login-screen">
+    <div class="login-frame">
       <div class="status-bar">
         <span>9:41</span>
         <span>5G 92%</span>
       </div>
 
-      <div class="login-hero">
+      <section class="login-hero">
         <div class="brand-mark">＋</div>
         <h1>智慧医疗</h1>
         <p>患者服务平台</p>
-      </div>
+      </section>
 
-      <div class="login-panel">
+      <section class="login-panel">
         <div class="tabs">
           <button class="tab" :class="{ active: activeTab === 'login' }" @click="activeTab = 'login'">登录</button>
           <button class="tab" :class="{ active: activeTab === 'register' }" @click="activeTab = 'register'">注册</button>
@@ -60,7 +60,7 @@
             <button class="patient-button submit-btn" @click="handleRegister">注册</button>
           </div>
         </div>
-      </div>
+      </section>
     </div>
   </div>
 </template>
@@ -118,22 +118,22 @@ export default {
   justify-content: center;
   align-items: center;
   min-height: 100vh;
-  padding: 18px;
+  padding: 16px;
   background:
-    radial-gradient(circle at 20% 10%, rgba(47, 128, 209, 0.18), transparent 28%),
-    linear-gradient(135deg, #eef7ff 0%, #f7fbff 48%, #e9f4ff 100%);
+    radial-gradient(circle at top, rgba(47, 128, 209, 0.18), transparent 30%),
+    linear-gradient(160deg, #eef7ff 0%, #f8fbff 52%, #e9f4ff 100%);
 }
 
-.login-screen {
-  width: min(390px, 100vw - 28px);
-  height: min(844px, 100vh - 36px);
+.login-frame {
+  width: min(390px, 100vw - 24px);
+  height: min(844px, 100vh - 32px);
   min-height: 720px;
-  background: var(--page-bg);
   border-radius: 32px;
   overflow: hidden;
-  box-shadow: 0 24px 60px rgba(42, 96, 148, 0.22);
   display: flex;
   flex-direction: column;
+  background: var(--page-bg);
+  box-shadow: 0 24px 60px rgba(42, 96, 148, 0.22);
 }
 
 .status-bar {
@@ -153,7 +153,8 @@ export default {
   color: #fff;
   text-align: center;
   background:
-    linear-gradient(135deg, var(--medical-blue), var(--medical-blue-dark));
+    linear-gradient(135deg, rgba(47, 128, 209, 0.98), rgba(31, 102, 173, 0.98)),
+    linear-gradient(180deg, #2f80d1, #1f66ad);
   flex: 0 0 auto;
 }
 
@@ -202,10 +203,12 @@ export default {
   flex: 1;
   display: flex;
   flex-direction: column;
-  background: #fff;
+  background: rgba(255, 255, 255, 0.78);
   border-radius: 18px;
   box-shadow: var(--shadow-soft);
   overflow: hidden;
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.55);
 }
 
 .tabs {
@@ -215,7 +218,7 @@ export default {
   gap: 8px;
   padding: 4px;
   margin-bottom: 14px;
-  background: #eef5fb;
+  background: rgba(238, 245, 251, 0.72);
   border-radius: 14px;
 }
 
@@ -232,7 +235,7 @@ export default {
 
 .tab.active {
   color: var(--medical-blue);
-  background: #fff;
+  background: rgba(255, 255, 255, 0.92);
   box-shadow: 0 6px 14px rgba(44, 109, 169, 0.12);
 }
 
@@ -269,9 +272,9 @@ export default {
   width: 100%;
   height: 44px;
   padding: 0 13px;
-  border: 1px solid var(--line-soft);
+  border: 1px solid rgba(226, 237, 249, 0.95);
   border-radius: 12px;
-  background: #fbfdff;
+  background: rgba(251, 253, 255, 0.88);
   font-size: 15px;
   color: var(--ink-main);
   outline: none;
