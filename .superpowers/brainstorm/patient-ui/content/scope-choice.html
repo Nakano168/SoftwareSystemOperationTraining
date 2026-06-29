@@ -1,0 +1,55 @@
+<h2>患者端第一版范围怎么定？</h2>
+<p class="subtitle">我已经从初步设计里提取到章瑶负责的患者端功能。下面是三种可落地范围，建议先选 A，能最快形成完整可演示闭环。</p>
+
+<div class="cards">
+  <div class="card" data-choice="a" onclick="toggleSelect(this)">
+    <div class="card-image">
+      <div style="width:220px;height:380px;margin:auto;border:8px solid #202124;border-radius:30px;background:#f7fbff;padding:18px;box-shadow:0 12px 26px rgba(20,40,80,.18)">
+        <div style="height:32px;display:flex;justify-content:space-between;font-size:11px;color:#627084"><span>9:41</span><span>5G 92%</span></div>
+        <div style="font-weight:700;font-size:18px;color:#16324f">智慧云诊疗</div>
+        <div style="margin-top:14px;background:#4f9cff;color:white;border-radius:14px;padding:14px;font-size:13px">AI 问诊后推荐科室与医生</div>
+        <div style="margin-top:12px;display:grid;grid-template-columns:1fr 1fr;gap:8px">
+          <div style="height:72px;background:white;border-radius:12px;padding:9px;font-size:12px">线上挂号</div>
+          <div style="height:72px;background:white;border-radius:12px;padding:9px;font-size:12px">我的记录</div>
+        </div>
+        <div style="margin-top:12px;background:white;border-radius:12px;padding:10px;font-size:12px;line-height:1.7">病历查询<br>报告查询<br>处方费用</div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>A. 演示闭环版（推荐）</h3>
+      <p>登录注册、首页、AI 问诊、智能导诊、医生列表、挂号/退号、我的挂号、病历/报告/处方/费用查询。后端提供真实接口，AI 用规则模拟，适合课程展示。</p>
+    </div>
+  </div>
+
+  <div class="card" data-choice="b" onclick="toggleSelect(this)">
+    <div class="card-image">
+      <div style="width:220px;height:380px;margin:auto;border:8px solid #202124;border-radius:30px;background:#fff8f5;padding:18px;box-shadow:0 12px 26px rgba(80,40,20,.16)">
+        <div style="height:32px;display:flex;justify-content:space-between;font-size:11px;color:#8a6d62"><span>9:41</span><span>5G 92%</span></div>
+        <div style="font-weight:700;font-size:18px;color:#4b2a23">患者服务</div>
+        <div style="margin-top:14px;background:#ee8f73;color:white;border-radius:14px;padding:14px;font-size:13px">挂号流程优先做扎实</div>
+        <div style="margin-top:12px;background:white;border-radius:12px;padding:10px;font-size:12px;line-height:1.8">科室筛选<br>医生排班<br>提交挂号<br>取消挂号</div>
+        <div style="margin-top:12px;background:white;border-radius:12px;padding:10px;font-size:12px">AI 功能简化为提示卡</div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>B. 传统业务优先版</h3>
+      <p>重点把挂号、退号、查询类页面做完整，AI 问诊只作为辅助入口。更稳，但不够突出“AI+医疗”的课程主题。</p>
+    </div>
+  </div>
+
+  <div class="card" data-choice="c" onclick="toggleSelect(this)">
+    <div class="card-image">
+      <div style="width:220px;height:380px;margin:auto;border:8px solid #202124;border-radius:30px;background:#f5fbf7;padding:18px;box-shadow:0 12px 26px rgba(20,80,50,.16)">
+        <div style="height:32px;display:flex;justify-content:space-between;font-size:11px;color:#5f776b"><span>9:41</span><span>5G 92%</span></div>
+        <div style="font-weight:700;font-size:18px;color:#163a2b">AI 健康助手</div>
+        <div style="margin-top:14px;background:#35a66a;color:white;border-radius:14px;padding:14px;font-size:13px">多轮病情咨询</div>
+        <div style="margin-top:12px;background:white;border-radius:12px;padding:10px;font-size:12px;line-height:1.8">风险分级<br>科室推荐<br>用药提醒<br>就诊建议</div>
+        <div style="margin-top:12px;background:white;border-radius:12px;padding:10px;font-size:12px">挂号查询保留基础能力</div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>C. AI 体验强化版</h3>
+      <p>把 AI 问诊做得更像聊天助手，智能导诊更突出；挂号和查询保留基础流程。展示感强，但后端和状态设计更复杂。</p>
+    </div>
+  </div>
+</div>

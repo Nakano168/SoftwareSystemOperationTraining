@@ -1,0 +1,62 @@
+<h2>手机端视觉方向</h2>
+<p class="subtitle">两版都沿用参考原型的 390×844 手机壳、状态栏、卡片、底部导航。差别主要是医疗感和亲和感的比例。</p>
+
+<div class="split">
+  <div class="mockup card" data-choice="medical-blue" onclick="toggleSelect(this)">
+    <div class="mockup-header">A. 清爽医疗蓝</div>
+    <div class="mockup-body">
+      <div style="width:260px;height:540px;margin:auto;border:8px solid #202124;border-radius:32px;background:#f5f9ff;overflow:hidden;color:#17324d;font-family:Microsoft YaHei,sans-serif">
+        <div style="height:42px;padding:12px 16px;display:flex;justify-content:space-between;font-size:12px"><span>9:41</span><span>5G · 92%</span></div>
+        <div style="padding:0 16px 12px;display:flex;justify-content:space-between;align-items:center">
+          <div><b style="font-size:17px">智慧云诊疗</b><div style="font-size:12px;color:#72839a;margin-top:2px">早上好，章瑶</div></div>
+          <div style="width:34px;height:34px;border-radius:50%;background:#dcecff"></div>
+        </div>
+        <div style="margin:0 16px;background:linear-gradient(135deg,#4f9cff,#3cc8b4);border-radius:16px;padding:15px;color:white">
+          <div style="font-size:12px;opacity:.9">AI 问诊助手</div>
+          <div style="font-size:18px;font-weight:700;margin-top:6px">描述症状，推荐科室</div>
+          <div style="margin-top:12px;background:rgba(255,255,255,.2);border-radius:999px;padding:8px 12px;font-size:12px">开始问诊</div>
+        </div>
+        <div style="padding:14px 16px;display:grid;grid-template-columns:1fr 1fr;gap:10px">
+          <div style="height:78px;background:white;border-radius:12px;padding:10px;box-shadow:0 4px 14px rgba(40,80,120,.08)">线上挂号<br><span style="font-size:12px;color:#7d8da0">余号查询</span></div>
+          <div style="height:78px;background:white;border-radius:12px;padding:10px;box-shadow:0 4px 14px rgba(40,80,120,.08)">我的记录<br><span style="font-size:12px;color:#7d8da0">挂号退号</span></div>
+        </div>
+        <div style="margin:0 16px;background:white;border-radius:12px;padding:12px;box-shadow:0 4px 14px rgba(40,80,120,.08)">
+          <b>今日就诊提醒</b>
+          <div style="font-size:12px;color:#72839a;line-height:1.8;margin-top:6px">内科 · 王医生<br>2026-06-22 上午 · 8号</div>
+        </div>
+        <div style="height:58px;margin-top:44px;background:white;border-top:1px solid #e9eef5;display:flex;justify-content:space-around;align-items:center;font-size:12px;color:#8aa">
+          <span style="color:#4f9cff">首页</span><span>问诊</span><span>挂号</span><span>我的</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="mockup card" data-choice="soft-care" onclick="toggleSelect(this)">
+    <div class="mockup-header">B. 柔和关怀风</div>
+    <div class="mockup-body">
+      <div style="width:260px;height:540px;margin:auto;border:8px solid #202124;border-radius:32px;background:#faf7f1;overflow:hidden;color:#2c2c2c;font-family:Microsoft YaHei,sans-serif">
+        <div style="height:42px;padding:12px 16px;display:flex;justify-content:space-between;font-size:12px"><span>9:41</span><span>5G · 92%</span></div>
+        <div style="padding:0 16px 12px;display:flex;justify-content:space-between;align-items:center">
+          <div><b style="font-size:17px">云脑患者端</b><div style="font-size:12px;color:#8d8278;margin-top:2px">安心问诊，轻松就医</div></div>
+          <div style="width:34px;height:34px;border-radius:50%;background:#f0d5d0"></div>
+        </div>
+        <div style="margin:0 16px;background:linear-gradient(135deg,#e8a39a,#8fb7df);border-radius:16px;padding:15px;color:white">
+          <div style="font-size:12px;opacity:.9">智能导诊</div>
+          <div style="font-size:18px;font-weight:700;margin-top:6px">先问问，再挂号</div>
+          <div style="margin-top:12px;background:rgba(255,255,255,.24);border-radius:999px;padding:8px 12px;font-size:12px">填写症状</div>
+        </div>
+        <div style="padding:14px 16px;display:grid;grid-template-columns:1fr 1fr;gap:10px">
+          <div style="height:78px;background:white;border-radius:12px;padding:10px;box-shadow:0 4px 14px rgba(80,50,30,.08)">线上挂号<br><span style="font-size:12px;color:#9a8c80">医生排班</span></div>
+          <div style="height:78px;background:white;border-radius:12px;padding:10px;box-shadow:0 4px 14px rgba(80,50,30,.08)">费用查询<br><span style="font-size:12px;color:#9a8c80">待缴已缴</span></div>
+        </div>
+        <div style="margin:0 16px;background:white;border-radius:12px;padding:12px;box-shadow:0 4px 14px rgba(80,50,30,.08)">
+          <b>最近报告</b>
+          <div style="font-size:12px;color:#8d8278;line-height:1.8;margin-top:6px">血常规报告已发布<br>AI 解读：指标基本平稳</div>
+        </div>
+        <div style="height:58px;margin-top:44px;background:white;border-top:1px solid #eee5dd;display:flex;justify-content:space-around;align-items:center;font-size:12px;color:#aaa">
+          <span style="color:#d8847d">首页</span><span>问诊</span><span>挂号</span><span>我的</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

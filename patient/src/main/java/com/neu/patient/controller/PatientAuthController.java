@@ -1,0 +1,115 @@
+package com.neu.patient.controller;
+
+import com.neu.patient.common.Result;
+import com.neu.patient.entity.Patient;
+import com.neu.patient.entity.SysUser;
+import com.neu.patient.service.PatientService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+@RestController
+@RequestMapping("/api/patient")
+public class PatientAuthController {
+
+    @Autowired
+    private PatientService patientService;
+
+    @PostMapping("/login")
+    public Result<SysUser> login(@RequestBody LoginRequest req) {
+        SysUser user = patientService.login(req.getUsername(), req.getPassword());
+        if (user != null) {
+            return Result.ok("登录成功", user);
+        }
+        return Result.fail("用户名或密码错误");
+    }
+
+    @PostMapping("/register")
+    public Result<?> register(@RequestBody RegisterRequest req) {
+        String validationMessage = validateRegisterRequest(req);
+        if (validationMessage != null) {
+            return Result.fail(validationMessage);
+        }
+
+        SysUser user = new SysUser();
+        user.setUsername(req.getUsername().trim());
+        user.setPassword(req.getPassword());
+        user.setRealName(req.getRealName().trim());
+        user.setPhone(req.getPhone().trim());
+
+        Patient patient = new Patient();
+        patient.setPatientName(req.getRealName().trim());
+        patient.setGender(req.getGender());
+        patient.setPhone(req.getPhone().trim());
+        patient.setIdCard(req.getIdCard().trim());
+
+        int result = patientService.register(user, patient);
+        switch (result) {
+            case 1: return Result.ok("注册成功，请登录");
+            case 0: return Result.fail("用户名已存在");
+            default: return Result.fail("注册失败");
+        }
+    }
+
+    @GetMapping("/info/{userId}")
+    public Result<Patient> getPatientInfo(@PathVariable Long userId) {
+        Patient patient = patientService.getPatientByUserId(userId);
+        return patient != null ? Result.ok(patient) : Result.fail("未找到患者信息");
+    }
+
+    @PutMapping("/update")
+    public Result<?> updatePatient(@RequestBody Patient patient) {
+        return patientService.updatePatient(patient) ? Result.ok("修改成功") : Result.fail("修改失败");
+    }
+
+    private String validateRegisterRequest(RegisterRequest req) {
+        if (isBlank(req.getUsername())) return "请输入用户名";
+        if (isBlank(req.getPassword())) return "请输入密码";
+        if (isBlank(req.getRealName())) return "请输入真实姓名";
+        if (isBlank(req.getPhone())) return "请输入手机号";
+        if (isBlank(req.getIdCard())) return "请输入身份证号";
+        if (isBlank(req.getGender())) return "请选择性别";
+        return null;
+    }
+
+    private boolean isBlank(String value) {
+        return value == null || value.trim().isEmpty();
+    }
+
+    static class LoginRequest {
+        private String username;
+        private String password;
+
+        public String getUsername() { return username; }
+        public void setUsername(String username) { this.username = username; }
+        public String getPassword() { return password; }
+        public void setPassword(String password) { this.password = password; }
+    }
+
+    static class RegisterRequest {
+        private String username;
+        private String password;
+        private String realName;
+        private String phone;
+        private String gender;
+        private String idCard;
+
+        public String getUsername() { return username; }
+        public void setUsername(String username) { this.username = username; }
+        public String getPassword() { return password; }
+        public void setPassword(String password) { this.password = password; }
+        public String getRealName() { return realName; }
+        public void setRealName(String realName) { this.realName = realName; }
+        public String getPhone() { return phone; }
+        public void setPhone(String phone) { this.phone = phone; }
+        public String getGender() { return gender; }
+        public void setGender(String gender) { this.gender = gender; }
+        public String getIdCard() { return idCard; }
+        public void setIdCard(String idCard) { this.idCard = idCard; }
+    }
+}
