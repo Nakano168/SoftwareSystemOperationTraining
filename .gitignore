@@ -1,0 +1,9 @@
+# Ignore everything
+*
+
+# But not these folders
+!patient/
+!vue/
+
+# And not this file
+!.gitignore

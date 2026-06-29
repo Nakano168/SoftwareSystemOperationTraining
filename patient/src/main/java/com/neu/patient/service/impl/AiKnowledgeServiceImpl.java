@@ -32,7 +32,6 @@ public class AiKnowledgeServiceImpl implements AiKnowledgeService {
         List<Registration> registrations = registrationMapper.findByPatientId(patientId);
 
         candidates.addAll(departments.stream()
-                .limit(10)
                 .map(d -> "科室:" + safe(d.getDeptName()) + "，简介:" + safe(d.getDescription()))
                 .collect(Collectors.toList()));
 

@@ -5,7 +5,9 @@ import com.neu.patient.common.EnumValues;
 import com.neu.patient.dto.AiConsultRequest;
 import com.neu.patient.dto.AiConsultResponse;
 import com.neu.patient.entity.AiConsultation;
+import com.neu.patient.entity.Department;
 import com.neu.patient.mapper.AiConsultationMapper;
+import com.neu.patient.mapper.DepartmentMapper;
 import com.neu.patient.service.AiConsultationService;
 import com.neu.patient.service.AiKnowledgeService;
 import com.neu.patient.service.DeepSeekAiService;
@@ -19,6 +21,7 @@ import java.util.Map;
 @Service
 public class AiConsultationServiceImpl implements AiConsultationService {
     @Autowired private AiConsultationMapper aiConsultationMapper;
+    @Autowired private DepartmentMapper departmentMapper;
     @Autowired private AiKnowledgeService aiKnowledgeService;
     @Autowired private DeepSeekAiService deepSeekAiService;
     @Autowired private ObjectMapper objectMapper;
@@ -33,21 +36,28 @@ public class AiConsultationServiceImpl implements AiConsultationService {
     }
 
     public AiConsultation handleConsultation(AiConsultRequest request) {
+        List<Department> departments = departmentMapper.findAllActive();
         List<String> candidates = aiKnowledgeService.buildCandidates(request.getPatientId(), request.getMode(), request.getContent());
         String systemPrompt = """
                 你是医院导诊助手。只能基于给定候选项回答，不得编造数据库不存在的科室、医生、病历、检查、处方、费用信息。
                 输出必须是 JSON，字段包含：summary, riskLevel, recommendedDept, recommendedDoctor, aiResult, note。
-                如果候选里没有合适内容，recommendedDept 和 recommendedDoctor 置空，note 说明未找到匹配项。
+                recommendedDept 必须使用候选科室中的完整科室名称；如果候选科室里没有合适内容，recommendedDept 置空，note 说明未找到匹配项。
                 """;
         String userPrompt = """
                 用户模式：%s
                 用户输入：%s
+                可推荐科室：
+                %s
                 候选项：
                 %s
                 请只从候选项中选择，并输出严格 JSON。
                 """.formatted(
                 request.getMode(),
                 request.getContent(),
+                departments.stream()
+                        .map(d -> "科室:" + safe(d.getDeptName()) + "，简介:" + safe(d.getDescription()))
+                        .reduce((left, right) -> left + "\n" + right)
+                        .orElse(""),
                 String.join("\n", candidates)
         );
 
@@ -60,6 +70,7 @@ public class AiConsultationServiceImpl implements AiConsultationService {
         consultation.setSymptomDetail(request.getContent());
         consultation.setAiSummary(parsed.getSummary());
         consultation.setRiskLevel(parsed.getRiskLevel());
+        consultation.setRecommendedDeptId(matchDepartmentId(parsed.getRecommendedDept(), departments));
         consultation.setAiResult(parsed.getAiResult() == null || parsed.getAiResult().isBlank() ? aiText : parsed.getAiResult());
         consultation.setStatus(EnumValues.AI_GENERATED);
         aiConsultationMapper.insert(consultation);
@@ -90,5 +101,21 @@ public class AiConsultationServiceImpl implements AiConsultationService {
 
     private String stringValue(Object value) {
         return value == null ? "" : String.valueOf(value);
+    }
+
+    private Long matchDepartmentId(String recommendedDept, List<Department> departments) {
+        if (recommendedDept == null || recommendedDept.isBlank()) {
+            return null;
+        }
+        String normalized = recommendedDept.trim();
+        return departments.stream()
+                .filter(d -> normalized.equals(safe(d.getDeptName()).trim()))
+                .map(Department::getDeptId)
+                .findFirst()
+                .orElse(null);
+    }
+
+    private String safe(String value) {
+        return value == null ? "" : value;
     }
 }
