@@ -8,47 +8,52 @@
 
     <div class="filter-stack">
       <div class="filter-shell">
-        <button class="filter-trigger" type="button" @click="toggleFilterPanel('status')">
-          <span class="filter-trigger-label">缴费状态</span>
-          <span class="filter-trigger-value">{{ currentStatusLabel }}</span>
-          <span class="filter-trigger-arrow" :class="{ open: activePanel === 'status' }"></span>
+        <button class="filter-trigger" type="button" @click="toggleFilterPanel">
+          <span class="filter-trigger-label">筛选条件</span>
+          <span class="filter-trigger-value">{{ currentFilterLabel }}</span>
+          <span class="filter-trigger-arrow" :class="{ open: panelOpen }"></span>
         </button>
         <transition name="panel-fade">
-          <div v-if="activePanel === 'status'" class="filter-panel">
-            <button
-              v-for="option in statusOptions"
-              :key="option.value"
-              type="button"
-              class="filter-option"
-              :class="{ active: statusTab === option.value }"
-              @click="selectStatus(option.value)"
-            >
-              <span class="filter-option-title">{{ option.label }}</span>
-              <span class="filter-option-count">{{ option.count }}</span>
+          <div v-if="panelOpen" class="filter-panel">
+            <button type="button" class="filter-reset" :class="{ active: statusTab === 'all' && typeTab === 'all' }" @click="resetFilters">
+              全部
             </button>
-          </div>
-        </transition>
-      </div>
 
-      <div class="filter-shell">
-        <button class="filter-trigger" type="button" @click="toggleFilterPanel('type')">
-          <span class="filter-trigger-label">缴费类型</span>
-          <span class="filter-trigger-value">{{ currentTypeLabel }}</span>
-          <span class="filter-trigger-arrow" :class="{ open: activePanel === 'type' }"></span>
-        </button>
-        <transition name="panel-fade">
-          <div v-if="activePanel === 'type'" class="filter-panel">
-            <button
-              v-for="option in typeOptions"
-              :key="option.value"
-              type="button"
-              class="filter-option"
-              :class="{ active: typeTab === option.value }"
-              @click="selectType(option.value)"
-            >
-              <span class="filter-option-title">{{ option.label }}</span>
-              <span class="filter-option-count">{{ option.count }}</span>
-            </button>
+            <div class="filter-group">
+              <div class="filter-group-title">缴费状态</div>
+              <div class="filter-group-options">
+                <button
+                  v-for="option in statusOptions"
+                  :key="option.value"
+                  v-show="option.value !== 'all'"
+                  type="button"
+                  class="filter-option"
+                  :class="{ active: statusTab === option.value }"
+                  @click="selectStatus(option.value)"
+                >
+                  <span class="filter-option-title">{{ option.label }}</span>
+                  <span class="filter-option-count">{{ option.count }}</span>
+                </button>
+              </div>
+            </div>
+
+            <div class="filter-group">
+              <div class="filter-group-title">缴费类型</div>
+              <div class="filter-group-options">
+                <button
+                  v-for="option in typeOptions"
+                  :key="option.value"
+                  v-show="option.value !== 'all'"
+                  type="button"
+                  class="filter-option"
+                  :class="{ active: typeTab === option.value }"
+                  @click="selectType(option.value)"
+                >
+                  <span class="filter-option-title">{{ option.label }}</span>
+                  <span class="filter-option-count">{{ option.count }}</span>
+                </button>
+              </div>
+            </div>
           </div>
         </transition>
       </div>
@@ -93,7 +98,7 @@ export default {
     return {
       statusTab: 'all',
       typeTab: 'all',
-      activePanel: null,
+      panelOpen: false,
       allList: [],
       patientId: null,
       channels: [
@@ -141,6 +146,12 @@ export default {
       const active = this.typeOptions.find(item => item.value === this.typeTab)
       return active ? `${active.label}${active.value === 'all' ? '' : ` · ${active.count}`}` : '全部'
     },
+    currentFilterLabel() {
+      const parts = []
+      if (this.statusTab !== 'all') parts.push(this.statusTab)
+      if (this.typeTab !== 'all') parts.push(this.typeTab)
+      return parts.length ? parts.join(' / ') : '全部'
+    },
     displayList() {
       return this.allList.filter(f => {
         const statusOk = this.statusTab === 'all' || f.status === this.statusTab
@@ -176,22 +187,27 @@ export default {
       if (order?.businessType === 'REGISTRATION' || order?.business_type === 'REGISTRATION') return '挂号'
       return ''
     },
-    toggleFilterPanel(panel) {
-      this.activePanel = this.activePanel === panel ? null : panel
+    toggleFilterPanel() {
+      this.panelOpen = !this.panelOpen
     },
     selectStatus(value) {
-      this.statusTab = value
-      this.activePanel = null
+      this.statusTab = this.statusTab === value ? 'all' : value
+      this.panelOpen = false
     },
     selectType(value) {
-      this.typeTab = value
-      this.activePanel = null
+      this.typeTab = this.typeTab === value ? 'all' : value
+      this.panelOpen = false
+    },
+    resetFilters() {
+      this.statusTab = 'all'
+      this.typeTab = 'all'
+      this.panelOpen = false
     },
     handleDocumentClick(event) {
       const shell = this.$el?.querySelector('.filter-stack')
       if (!shell) return
       if (!shell.contains(event.target)) {
-        this.activePanel = null
+        this.panelOpen = false
       }
     },
     feeStatusClass(status) {
@@ -284,6 +300,42 @@ export default {
   border-radius: 16px;
   background: rgba(255, 255, 255, 0.98);
   box-shadow: 0 18px 40px rgba(15, 23, 42, 0.12);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.filter-reset {
+  width: 100%;
+  min-height: 40px;
+  border: 1px solid var(--line-soft);
+  border-radius: 12px;
+  background: #f7fbff;
+  color: var(--ink-strong);
+  font-size: 14px;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.filter-reset.active {
+  border-color: var(--medical-blue);
+  background: rgba(48, 118, 255, 0.08);
+  color: var(--medical-blue);
+}
+
+.filter-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.filter-group-title {
+  font-size: 12px;
+  color: var(--ink-muted);
+  font-weight: 700;
+}
+
+.filter-group-options {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 10px;
