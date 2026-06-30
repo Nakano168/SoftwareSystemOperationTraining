@@ -28,9 +28,15 @@ public class RegistrationServiceImpl implements RegistrationService {
     @Transactional
     public Registration registerAppointment(Registration reg) {
         DoctorSchedule schedule = doctorScheduleMapper.selectById(reg.getScheduleId());
-        if (schedule == null || schedule.getRemainQuota() == null || schedule.getRemainQuota() <= 0
+        if (schedule == null) {
+            throw new IllegalStateException("该预约时间段不可预约");
+        }
+        if (EnumValues.SCHEDULE_STOPPED.equals(schedule.getStatus())) {
+            throw new IllegalStateException("该时间段已停用");
+        }
+        if (schedule.getRemainQuota() == null || schedule.getRemainQuota() <= 0
                 || !EnumValues.SCHEDULE_AVAILABLE.equals(schedule.getStatus())) {
-            throw new IllegalStateException("该医生可预约人数为零");
+            throw new IllegalStateException("该时间段可预约人数为零");
         }
         reg.setRegistrationNo("RG" + System.currentTimeMillis());
         reg.setFeeStatus(EnumValues.FEE_WAITING_PAYMENT);

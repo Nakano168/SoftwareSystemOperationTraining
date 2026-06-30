@@ -59,8 +59,8 @@
             <span class="list-title">{{ s.workDate }} {{ periodText(s.timePeriod) }}</span>
             <span class="list-desc">{{ s.startTime }} - {{ s.endTime }} · 剩余 {{ s.remainQuota }} / {{ s.totalQuota }} 号</span>
           </span>
-          <span v-if="isScheduleFull(s)" class="doctor-status full">约满</span>
-          <span v-else class="fee-tag">¥{{ s.registrationFee }}</span>
+          <span v-if="scheduleStatus(s) === '可预约'" class="fee-tag">¥{{ s.registrationFee }}</span>
+          <span v-else class="doctor-status full">{{ scheduleStatusText(s) }}</span>
         </button>
         <div v-if="schedules.length === 0" class="patient-empty">暂无排班信息</div>
       </div>
@@ -178,14 +178,36 @@ export default {
       } catch(e) {}
     },
     isScheduleFull(s) {
-      return (s.status || '约满') !== '可预约' || Number(s.remainQuota || 0) <= 0
+      return this.scheduleStatus(s) !== '可预约'
+    },
+    scheduleStatus(s) {
+      if (!s) return '停用'
+      const status = s.status || '停用'
+      if (status === '已过期') return '已过期'
+      if (status === '停用') return '停用'
+      if (Number(s.remainQuota || 0) <= 0) return '约满'
+      return '可预约'
+    },
+    scheduleStatusText(s) {
+      const status = this.scheduleStatus(s)
+      if (status === '可预约') return '可预约'
+      if (status === '停用') return '停用'
+      return '约满'
     },
     handleScheduleClick(s) {
-      if (this.isScheduleFull(s)) {
+      const status = this.scheduleStatus(s)
+      if (status === '可预约') {
+        this.confirmBooking(s)
+        return
+      }
+      if (status === '停用') {
+        feedback.toast('该时间段已停用')
+        return
+      }
+      if (status === '约满') {
         feedback.toast('该时间段可预约人数为零')
         return
       }
-      this.confirmBooking(s)
     },
     backStep() {
       if (this.step === 3) {
