@@ -59,7 +59,8 @@
             <span class="list-title">{{ s.workDate }} {{ periodText(s.timePeriod) }}</span>
             <span class="list-desc">{{ s.startTime }} - {{ s.endTime }} · 剩余 {{ s.remainQuota }} / {{ s.totalQuota }} 号</span>
           </span>
-          <span v-if="scheduleStatus(s) === '可预约'" class="fee-tag">¥{{ s.registrationFee }}</span>
+          <span v-if="isAlreadyBooked(s)" class="doctor-status full">已挂号</span>
+          <span v-else-if="scheduleStatus(s) === '可预约'" class="fee-tag">¥{{ s.registrationFee }}</span>
           <span v-else class="doctor-status full">{{ scheduleStatusText(s) }}</span>
         </button>
         <div v-if="schedules.length === 0" class="patient-empty">暂无排班信息</div>
@@ -83,7 +84,8 @@ export default {
       doctors: [],
       selectedDoctor: null,
       schedules: [],
-      patientId: null
+      patientId: null,
+      myRegistrations: []
     }
   },
   computed: {
@@ -110,6 +112,7 @@ export default {
   async mounted() {
     await this.loadDepartments()
     await this.loadPatient()
+    if (this.patientId) await this.loadMyRegistrations()
   },
   methods: {
     periodText(value) {
@@ -122,6 +125,14 @@ export default {
         const res = await axios.get(`/api/patient/info/${userId}`)
         if (res.data.success && res.data.data) {
           this.patientId = res.data.data.patientId
+        }
+      } catch(e) {}
+    },
+    async loadMyRegistrations() {
+      try {
+        const res = await axios.get(`/api/registration/my/${this.patientId}`)
+        if (res.data.success) {
+          this.myRegistrations = res.data.data || []
         }
       } catch(e) {}
     },
@@ -176,9 +187,21 @@ export default {
         const res = await axios.get(`/api/registration/schedules/${d.doctorId}`)
         if (res.data.success) this.schedules = res.data.data
       } catch(e) {}
+      if (this.patientId) await this.loadMyRegistrations()
+    },
+    activeRegistrationForSchedule(s) {
+      if (!s || !this.selectedDoctor) return null
+      return this.myRegistrations.find(r =>
+        String(r.doctorId) === String(this.selectedDoctor.doctorId) &&
+        String(r.scheduleId) === String(s.scheduleId) &&
+        ['待支付', '待确认', '接诊中'].includes(r.status)
+      ) || null
+    },
+    isAlreadyBooked(s) {
+      return !!this.activeRegistrationForSchedule(s)
     },
     isScheduleFull(s) {
-      return this.scheduleStatus(s) !== '可预约'
+      return this.isAlreadyBooked(s) || this.scheduleStatus(s) !== '可预约'
     },
     scheduleStatus(s) {
       if (!s) return '停用'
@@ -195,6 +218,10 @@ export default {
       return '约满'
     },
     handleScheduleClick(s) {
+      if (this.isAlreadyBooked(s)) {
+        feedback.toast('您已挂过这个号')
+        return
+      }
       const status = this.scheduleStatus(s)
       if (status === '可预约') {
         this.confirmBooking(s)
