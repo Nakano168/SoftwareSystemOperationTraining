@@ -11,7 +11,7 @@ SET
   fo.updated_at = NOW(),
   r.fee_status = '已退费',
   r.updated_at = NOW()
-WHERE r.status = '已取消'
+WHERE r.status = '已退号'
   AND fo.business_type = 'REGISTRATION'
   AND fo.status = '已支付';
 
@@ -20,7 +20,7 @@ JOIN fee_order fo ON fo.registration_id = r.registration_id
 SET
   r.fee_status = '已退费',
   r.updated_at = NOW()
-WHERE r.status = '已取消'
+WHERE r.status = '已退号'
   AND fo.business_type = 'REGISTRATION'
   AND fo.status = '已退费'
   AND r.fee_status <> '已退费';

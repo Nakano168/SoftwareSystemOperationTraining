@@ -8,14 +8,13 @@ public final class EnumValues {
 
     public static final String FEE_WAITING_PAYMENT = "待支付";
     public static final String FEE_PAID = "已支付";
-    public static final String FEE_PARTIAL_REFUNDED = "部分退费";
     public static final String FEE_REFUNDED = "已退费";
 
     public static final String REGISTRATION_WAITING_PAYMENT = "待支付";
-    public static final String REGISTRATION_WAITING_VISIT = "待接诊";
+    public static final String REGISTRATION_WAITING_CONFIRMATION = "待确认";
     public static final String REGISTRATION_IN_VISIT = "接诊中";
     public static final String REGISTRATION_COMPLETED = "已完成";
-    public static final String REGISTRATION_CANCELLED = "已取消";
+    public static final String REGISTRATION_RETURNED = "已退号";
     public static final String REGISTRATION_NO_SHOW = "爽约";
 
     public static final String SCHEDULE_MORNING = "上午";

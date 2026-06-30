@@ -54,6 +54,7 @@ class RegistrationPaymentFlowTest {
         assertThat(order.getTotalAmount()).isEqualByComparingTo(saved.getRegistrationFee());
         assertThat(order.getPaidAmount()).isEqualByComparingTo("0.00");
         assertThat(order.getStatus()).isEqualTo(EnumValues.FEE_ORDER_WAITING_PAYMENT);
+        assertThat(saved.getStatus()).isEqualTo(EnumValues.REGISTRATION_WAITING_CONFIRMATION);
     }
 
     @Test
@@ -85,7 +86,7 @@ class RegistrationPaymentFlowTest {
         Registration cancelledRegistration = registrationMapper.selectById(saved.getRegistrationId());
         FeeOrder refundedOrder = feeOrderMapper.selectById(order.getFeeOrderId());
         assertThat(cancelled).isTrue();
-        assertThat(cancelledRegistration.getStatus()).isEqualTo(EnumValues.REGISTRATION_CANCELLED);
+        assertThat(cancelledRegistration.getStatus()).isEqualTo(EnumValues.REGISTRATION_RETURNED);
         assertThat(cancelledRegistration.getFeeStatus()).isEqualTo(EnumValues.FEE_REFUNDED);
         assertThat(refundedOrder.getStatus()).isEqualTo(EnumValues.FEE_ORDER_REFUNDED);
         assertThat(refundedOrder.getRefundAmount()).isEqualByComparingTo(refundedOrder.getTotalAmount());

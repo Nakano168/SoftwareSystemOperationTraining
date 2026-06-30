@@ -43,7 +43,7 @@ export default {
     statusClass(status) {
       if (status === '待缴费' || status === '待发药' || status === '发药中' || status === 'active' || status === 'pending') return 'info'
       if (status === '已发药' || status === '已完成' || status === 'dispensed' || status === 'completed') return 'success'
-      if (status === '已取消' || status === '已退药' || status === 'cancelled' || status === 'returned') return 'danger'
+      if (status === '已退药' || status === 'cancelled' || status === 'returned') return 'danger'
       return ''
     }
   }

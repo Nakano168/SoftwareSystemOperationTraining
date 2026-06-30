@@ -40,7 +40,7 @@ public class RegistrationServiceImpl implements RegistrationService {
         }
         reg.setRegistrationNo("RG" + System.currentTimeMillis());
         reg.setFeeStatus(EnumValues.FEE_WAITING_PAYMENT);
-        reg.setStatus(EnumValues.REGISTRATION_WAITING_VISIT);
+        reg.setStatus(EnumValues.REGISTRATION_WAITING_CONFIRMATION);
         reg.setRegisteredAt(LocalDateTime.now());
         reg.setCreatedAt(LocalDateTime.now());
         reg.setUpdatedAt(LocalDateTime.now());
@@ -76,14 +76,14 @@ public class RegistrationServiceImpl implements RegistrationService {
     @Transactional
     public boolean cancelRegistration(Long registrationId) {
         Registration reg = registrationMapper.selectById(registrationId);
-        if (reg != null && EnumValues.REGISTRATION_WAITING_VISIT.equals(reg.getStatus())) {
+        if (reg != null && EnumValues.REGISTRATION_WAITING_CONFIRMATION.equals(reg.getStatus())) {
             boolean refunded = handleRefundForCancelledRegistration(reg);
             if (refunded) {
                 reg.setFeeStatus(EnumValues.FEE_REFUNDED);
             } else if (!EnumValues.FEE_WAITING_PAYMENT.equals(reg.getFeeStatus())) {
                 reg.setFeeStatus(EnumValues.FEE_WAITING_PAYMENT);
             }
-            reg.setStatus(EnumValues.REGISTRATION_CANCELLED);
+            reg.setStatus(EnumValues.REGISTRATION_RETURNED);
             reg.setUpdatedAt(LocalDateTime.now());
             registrationMapper.updateById(reg);
             if (reg.getScheduleId() != null) {

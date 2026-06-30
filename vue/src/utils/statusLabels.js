@@ -1,13 +1,13 @@
 const registrationStatusMap = {
   registered: '已挂号',
-  waiting_visit: '待接诊',
-  '待接诊': '待接诊',
+  waiting_confirmation: '待确认',
+  '待确认': '待确认',
   in_visit: '接诊中',
   '接诊中': '接诊中',
   completed: '已完成',
   '已完成': '已完成',
-  cancelled: '已取消',
-  '已取消': '已取消',
+  returned: '已退号',
+  '已退号': '已退号',
   no_show: '爽约',
   '爽约': '爽约'
 }
@@ -16,11 +16,9 @@ const feeStatusMap = {
   unpaid: '待支付',
   paid: '已支付',
   refunded: '已退费',
-  partial_refunded: '部分退费',
   '待支付': '待支付',
   '已支付': '已支付',
-  '已退费': '已退费',
-  '部分退费': '部分退费'
+  '已退费': '已退费'
 }
 
 const businessTypeMap = {
