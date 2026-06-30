@@ -20,9 +20,9 @@ WHERE fee_status IN ('unpaid', 'paid', 'refunded');
 
 UPDATE registration
 SET status = CASE status
-    WHEN 'registered' THEN '待确认'
+    WHEN 'registered' THEN '待支付'
     WHEN 'completed' THEN '已完成'
-    WHEN 'cancelled' THEN '已退号'
+    WHEN 'cancelled' THEN '已取消'
     ELSE status
 END
 WHERE status IN ('registered', 'completed', 'cancelled');
@@ -65,9 +65,9 @@ WHERE status IN ('unpaid', 'paid', 'refunded');
 
 UPDATE outpatient_visit
 SET status = CASE status
-    WHEN 'registered' THEN '待确认'
+    WHEN 'registered' THEN '待支付'
     WHEN 'completed' THEN '已完成'
-    WHEN 'cancelled' THEN '已退号'
+    WHEN 'cancelled' THEN '已取消'
     ELSE status
 END
 WHERE status IN ('registered', 'completed', 'cancelled');
@@ -110,7 +110,7 @@ UPDATE exam_lab_order
 SET status = CASE status
     WHEN 'pending' THEN '待缴费'
     WHEN 'completed' THEN '已完成'
-    WHEN 'cancelled' THEN '已退号'
+    WHEN 'cancelled' THEN '已取消'
     ELSE status
 END
 WHERE status IN ('pending', 'completed', 'cancelled');
@@ -127,7 +127,7 @@ UPDATE exam_lab_order_item
 SET status = CASE status
     WHEN 'pending' THEN '待缴费'
     WHEN 'completed' THEN '已完成'
-    WHEN 'cancelled' THEN '已退号'
+    WHEN 'cancelled' THEN '已取消'
     ELSE status
 END
 WHERE status IN ('pending', 'completed', 'cancelled');
@@ -171,7 +171,7 @@ SET status = CASE status
     WHEN 'active' THEN '待缴费'
     WHEN 'dispensed' THEN '已发药'
     WHEN 'completed' THEN '已完成'
-    WHEN 'cancelled' THEN '已退号'
+    WHEN 'cancelled' THEN '已取消'
     ELSE status
 END
 WHERE status IN ('active', 'dispensed', 'completed', 'cancelled');
@@ -181,7 +181,7 @@ SET status = CASE status
     WHEN 'pending' THEN '待发药'
     WHEN 'active' THEN '待发药'
     WHEN 'dispensed' THEN '已发药'
-    WHEN 'cancelled' THEN '已退号'
+    WHEN 'cancelled' THEN '已取消'
     ELSE status
 END
 WHERE status IN ('pending', 'active', 'dispensed', 'cancelled');
@@ -215,7 +215,7 @@ UPDATE triage_record
 SET status = CASE status
     WHEN 'pending' THEN '待分诊'
     WHEN 'completed' THEN '已完成'
-    WHEN 'cancelled' THEN '已退号'
+    WHEN 'cancelled' THEN '已取消'
     ELSE status
 END
 WHERE status IN ('pending', 'completed', 'cancelled');

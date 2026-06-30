@@ -131,9 +131,9 @@ INSERT INTO registration (
   registration_fee, fee_status, status, registered_at
 )
 VALUES
-  (@patient_id, @skin_dept_id, @doctor_sun_id, @schedule_sun_morning, '线上', 'RG20260623003', 12, 15.00, '待支付', '待确认', NOW()),
+  (@patient_id, @skin_dept_id, @doctor_sun_id, @schedule_sun_morning, '线上', 'RG20260623003', 12, 15.00, '待支付', '待支付', NOW()),
   (@patient_id, @ortho_dept_id, @doctor_luo_id, @schedule_luo_morning, '线上', 'RG20260623004', 5, 30.00, '已支付', '已完成', DATE_SUB(NOW(), INTERVAL 18 DAY)),
-  (@patient_id, @pediatrics_dept_id, @doctor_zhao_id, @schedule_zhao_afternoon, '线上', 'RG20260623005', 10, 35.00, '待支付', '已退号', DATE_SUB(NOW(), INTERVAL 2 DAY))
+  (@patient_id, @pediatrics_dept_id, @doctor_zhao_id, @schedule_zhao_afternoon, '线上', 'RG20260623005', 10, 35.00, '待支付', '已取消', DATE_SUB(NOW(), INTERVAL 2 DAY))
 ON DUPLICATE KEY UPDATE
   patient_id = VALUES(patient_id),
   dept_id = VALUES(dept_id),

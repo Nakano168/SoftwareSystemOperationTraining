@@ -8,8 +8,9 @@
 
     <div class="patient-tabs">
       <button class="patient-tab" :class="{ active: tab === 'all' }" @click="tab='all'">全部</button>
+      <button class="patient-tab" :class="{ active: tab === '待支付' }" @click="tab='待支付'">待支付</button>
       <button class="patient-tab" :class="{ active: tab === '待确认' }" @click="tab='待确认'">待确认</button>
-      <button class="patient-tab" :class="{ active: tab === '已退号' }" @click="tab='已退号'">已退号</button>
+      <button class="patient-tab" :class="{ active: tab === '已取消' }" @click="tab='已取消'">已取消</button>
     </div>
 
     <div class="patient-content appointment-list">
@@ -26,7 +27,7 @@
           <span class="label">缴费状态</span>
           <span class="value" :class="feeStatusClass(r.feeStatus)">{{ feeStatusText(r.feeStatus) }}</span>
         </div>
-        <div class="card-actions" v-if="r.status === '待确认'">
+        <div class="card-actions" v-if="r.status === '待支付' || r.status === '待确认'">
           <button
             class="patient-button secondary"
             :disabled="cancelingId === r.registrationId"
@@ -69,9 +70,10 @@ export default {
     registrationStatusText,
     feeStatusText,
     statusClass(status) {
+      if (status === '待支付' || status === 'unpaid') return 'warn'
       if (status === '待确认' || status === '接诊中' || status === 'registered') return 'info'
       if (status === '已完成' || status === 'completed') return 'success'
-      if (status === '已退号' || status === '爽约' || status === 'returned') return 'danger'
+      if (status === '已取消' || status === '已退号' || status === '爽约' || status === 'returned' || status === 'cancelled') return 'danger'
       return ''
     },
     feeStatusClass(status) {

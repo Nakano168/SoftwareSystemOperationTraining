@@ -26,7 +26,7 @@ public class RegistrationRefundDataRepairRunner implements ApplicationRunner {
     @Override
     public void run(ApplicationArguments args) {
         List<Registration> cancelledRegistrations = registrationMapper.selectList(
-                new QueryWrapper<Registration>().eq("status", EnumValues.REGISTRATION_RETURNED));
+                new QueryWrapper<Registration>().eq("status", EnumValues.REGISTRATION_CANCELLED));
 
         for (Registration reg : cancelledRegistrations) {
             FeeOrder order = feeOrderMapper.selectOne(new QueryWrapper<FeeOrder>()

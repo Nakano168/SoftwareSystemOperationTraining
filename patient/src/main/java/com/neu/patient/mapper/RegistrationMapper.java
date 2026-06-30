@@ -21,6 +21,6 @@ public interface RegistrationMapper extends BaseMapper<Registration> {
             "LEFT JOIN doctor doc ON r.doctor_id = doc.doctor_id " +
             "LEFT JOIN sys_user u ON doc.user_id = u.user_id " +
             "LEFT JOIN department d ON r.dept_id = d.dept_id " +
-            "WHERE r.patient_id = #{patientId} AND r.status = '待确认' ORDER BY r.registered_at DESC")
+            "WHERE r.patient_id = #{patientId} AND r.status IN ('待支付', '待确认') ORDER BY r.registered_at DESC")
     List<Registration> findActiveByPatientId(Long patientId);
 }

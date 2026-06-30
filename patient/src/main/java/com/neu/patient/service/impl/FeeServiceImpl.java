@@ -34,6 +34,7 @@ public class FeeServiceImpl implements FeeService {
                 Registration registration = registrationMapper.selectById(order.getRegistrationId());
                 if (registration != null) {
                     registration.setFeeStatus(EnumValues.FEE_PAID);
+                    registration.setStatus(EnumValues.REGISTRATION_WAITING_CONFIRMATION);
                     registration.setUpdatedAt(LocalDateTime.now());
                     registrationMapper.updateById(registration);
                 }

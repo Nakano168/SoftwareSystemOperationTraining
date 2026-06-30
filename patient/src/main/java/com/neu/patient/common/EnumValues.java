@@ -14,7 +14,7 @@ public final class EnumValues {
     public static final String REGISTRATION_WAITING_CONFIRMATION = "待确认";
     public static final String REGISTRATION_IN_VISIT = "接诊中";
     public static final String REGISTRATION_COMPLETED = "已完成";
-    public static final String REGISTRATION_RETURNED = "已退号";
+    public static final String REGISTRATION_CANCELLED = "已取消";
     public static final String REGISTRATION_NO_SHOW = "爽约";
 
     public static final String SCHEDULE_MORNING = "上午";
