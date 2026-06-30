@@ -6,15 +6,37 @@
       <span></span>
     </div>
 
-    <div class="patient-tabs">
-      <button class="patient-tab" :class="{ active: tab === 'all' }" @click="tab='all'">全部</button>
-      <button class="patient-tab" :class="{ active: tab === '待支付' }" @click="tab='待支付'">待支付</button>
-      <button class="patient-tab" :class="{ active: tab === '待确认' }" @click="tab='待确认'">待确认</button>
-      <button class="patient-tab" :class="{ active: tab === '已取消' }" @click="tab='已取消'">已取消</button>
+    <div ref="filterShell" class="filter-shell">
+      <button class="filter-trigger" type="button" @click="toggleFilterPanel">
+        <span class="filter-trigger-label">挂号状态</span>
+        <span class="filter-trigger-value">{{ currentTabLabel }}</span>
+        <span class="filter-trigger-arrow" :class="{ open: filterPanelOpen }"></span>
+      </button>
+
+      <transition name="panel-fade">
+        <div v-if="filterPanelOpen" class="filter-panel">
+          <button
+            v-for="option in filterOptions"
+            :key="option.value"
+            type="button"
+            class="filter-option"
+            :class="{ active: tab === option.value }"
+            @click="selectTab(option.value)"
+          >
+            <span class="filter-option-title">{{ option.label }}</span>
+            <span class="filter-option-count">{{ option.count }}</span>
+          </button>
+        </div>
+      </transition>
     </div>
 
     <div class="patient-content appointment-list">
-      <div class="record-card patient-card" v-for="r in filteredList" :key="r.registrationId">
+      <div
+        class="record-card patient-card appointment-card"
+        v-for="r in filteredList"
+        :key="r.registrationId"
+        @click="onCardClick(r)"
+      >
         <div class="card-head">
           <span class="patient-status" :class="statusClass(r.status)">{{ registrationStatusText(r.status) }}</span>
           <span class="date">{{ r.registeredAt?.substring(0,10) }}</span>
@@ -31,11 +53,11 @@
           <button
             class="patient-button secondary"
             :disabled="cancelingId === r.registrationId"
-            @click="cancelReg(r.registrationId)"
+            @click.stop="cancelReg(r.registrationId)"
           >
             {{ cancelingId === r.registrationId ? '取消中...' : '取消挂号' }}
           </button>
-          <button v-if="r.feeStatus === '待支付'" class="patient-button" @click="payFee(r)">去缴费</button>
+          <button v-if="r.feeStatus === '待支付'" class="patient-button" @click.stop="payFee(r)">去缴费</button>
         </div>
       </div>
       <div v-if="filteredList.length === 0" class="patient-empty">暂无挂号记录</div>
@@ -53,22 +75,80 @@ export default {
       tab: 'all',
       registrations: [],
       patientId: null,
-      cancelingId: null
+      cancelingId: null,
+      filterPanelOpen: false
     }
   },
   computed: {
+    filterOptions() {
+      const labels = [
+        { value: 'all', label: '全部' },
+        { value: '待支付', label: '待支付' },
+        { value: '待确认', label: '待确认' },
+        { value: '接诊中', label: '接诊中' },
+        { value: '已取消', label: '已取消' },
+        { value: '爽约', label: '爽约' },
+        { value: '已退号', label: '已退号' }
+      ]
+      return labels.map(item => ({
+        ...item,
+        count: item.value === 'all'
+          ? this.registrations.length
+          : this.registrations.filter(r => this.statusGroup(r.status) === item.value).length
+      }))
+    },
+    currentTabLabel() {
+      const active = this.filterOptions.find(item => item.value === this.tab)
+      return active ? `${active.label}${active.value === 'all' ? '' : ` · ${active.count}`}` : '全部'
+    },
     filteredList() {
       if (this.tab === 'all') return this.registrations
-      return this.registrations.filter(r => r.status === this.tab)
+      return this.registrations.filter(r => this.statusGroup(r.status) === this.tab)
     }
   },
   async mounted() {
     await this.loadPatient()
     if (this.patientId) await this.loadData()
+    document.addEventListener('click', this.handleDocumentClick)
+  },
+  beforeUnmount() {
+    document.removeEventListener('click', this.handleDocumentClick)
   },
   methods: {
     registrationStatusText,
     feeStatusText,
+    toggleFilterPanel() {
+      this.filterPanelOpen = !this.filterPanelOpen
+    },
+    selectTab(value) {
+      this.tab = value
+      this.filterPanelOpen = false
+    },
+    onCardClick(r) {
+      if (!r || this.cancelingId === r.registrationId) return
+      if (r.feeStatus === '待支付') {
+        this.payFee(r)
+        return
+      }
+      feedback.toast('暂无可查看的详情')
+    },
+    handleDocumentClick(event) {
+      const shell = this.$refs.filterShell
+      if (!shell) return
+      if (!shell.contains(event.target)) {
+        this.filterPanelOpen = false
+      }
+    },
+    statusGroup(status) {
+      if (status === '待支付' || status === 'unpaid') return '待支付'
+      if (status === '待确认' || status === 'registered' || status === 'waiting_confirmation') return '待确认'
+      if (status === '接诊中' || status === 'in_visit') return '接诊中'
+      if (status === '已取消' || status === 'cancelled') return '已取消'
+      if (status === '爽约' || status === 'no_show') return '爽约'
+      if (status === '已退号' || status === 'returned') return '已退号'
+      if (status === '已完成' || status === 'completed') return '已完成'
+      return status || ''
+    },
     statusClass(status) {
       if (status === '待支付' || status === 'unpaid') return 'warn'
       if (status === '待确认' || status === '接诊中' || status === 'registered') return 'info'
@@ -132,8 +212,152 @@ export default {
   gap: 12px;
 }
 
+.filter-shell {
+  position: relative;
+  margin-bottom: 12px;
+}
+
+.filter-trigger {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 14px 16px;
+  border: 1px solid var(--line-soft);
+  border-radius: 14px;
+  background: #fff;
+  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.06);
+  cursor: pointer;
+}
+
+.filter-trigger-label {
+  font-size: 12px;
+  color: var(--ink-muted);
+  flex: 0 0 auto;
+}
+
+.filter-trigger-value {
+  margin-left: auto;
+  color: var(--ink-strong);
+  font-weight: 800;
+}
+
+.filter-trigger-arrow {
+  width: 10px;
+  height: 10px;
+  border-right: 2px solid var(--ink-muted);
+  border-bottom: 2px solid var(--ink-muted);
+  transform: rotate(45deg);
+  transition: transform 0.2s ease;
+  margin-left: 4px;
+}
+
+.filter-trigger-arrow.open {
+  transform: rotate(-135deg);
+}
+
+.filter-panel {
+  position: absolute;
+  top: calc(100% + 10px);
+  left: 0;
+  right: 0;
+  z-index: 20;
+  padding: 12px;
+  border: 1px solid var(--line-soft);
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.98);
+  box-shadow: 0 18px 40px rgba(15, 23, 42, 0.12);
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.filter-option {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 12px 14px;
+  border: 1px solid var(--line-soft);
+  border-radius: 12px;
+  background: #fff;
+  cursor: pointer;
+  text-align: left;
+}
+
+.filter-option-title {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--ink-strong);
+}
+
+.filter-option-count {
+  min-width: 28px;
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: #f2f6ff;
+  color: var(--medical-blue);
+  font-size: 12px;
+  font-weight: 700;
+  text-align: center;
+}
+
+.filter-option.active {
+  border-color: var(--medical-blue);
+  background: linear-gradient(180deg, rgba(48, 118, 255, 0.08), rgba(48, 118, 255, 0.03));
+  box-shadow: 0 8px 18px rgba(48, 118, 255, 0.12);
+}
+
+.filter-option.active .filter-option-title {
+  color: var(--medical-blue);
+}
+
+.filter-option.active .filter-option-count {
+  background: rgba(48, 118, 255, 0.14);
+  color: var(--medical-blue);
+}
+
+.panel-fade-enter-active,
+.panel-fade-leave-active {
+  transition: opacity 0.18s ease, transform 0.18s ease;
+}
+
+.panel-fade-enter-from,
+.panel-fade-leave-to {
+  opacity: 0;
+  transform: translateY(-6px);
+}
+
+.tabs-scroll {
+  display: flex;
+  flex-wrap: nowrap;
+  gap: 10px;
+  overflow-x: auto;
+  overflow-y: hidden;
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+  padding-bottom: 4px;
+  margin-bottom: 12px;
+  cursor: grab;
+  user-select: none;
+  touch-action: pan-y;
+}
+
+.tabs-scroll::-webkit-scrollbar {
+  display: none;
+}
+
+.tabs-scroll:active {
+  cursor: grabbing;
+}
+
 .record-card {
   padding: 14px;
+}
+
+.appointment-card {
+  cursor: pointer;
 }
 
 .card-head {
