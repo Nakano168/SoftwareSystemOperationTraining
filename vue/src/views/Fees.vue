@@ -5,29 +5,55 @@
       <span class="patient-title">在线缴费</span>
       <span></span>
     </div>
-    <div class="filter-shell">
-      <button class="filter-trigger" type="button" @click="toggleFilterPanel">
-        <span class="filter-trigger-label">缴费状态</span>
-        <span class="filter-trigger-value">{{ currentTabLabel }}</span>
-        <span class="filter-trigger-arrow" :class="{ open: filterPanelOpen }"></span>
-      </button>
 
-      <transition name="panel-fade">
-        <div v-if="filterPanelOpen" class="filter-panel">
-          <button
-            v-for="option in filterOptions"
-            :key="option.value"
-            type="button"
-            class="filter-option"
-            :class="{ active: tab === option.value }"
-            @click="selectTab(option.value)"
-          >
-            <span class="filter-option-title">{{ option.label }}</span>
-            <span class="filter-option-count">{{ option.count }}</span>
-          </button>
-        </div>
-      </transition>
+    <div class="filter-stack">
+      <div class="filter-shell">
+        <button class="filter-trigger" type="button" @click="toggleFilterPanel('status')">
+          <span class="filter-trigger-label">缴费状态</span>
+          <span class="filter-trigger-value">{{ currentStatusLabel }}</span>
+          <span class="filter-trigger-arrow" :class="{ open: activePanel === 'status' }"></span>
+        </button>
+        <transition name="panel-fade">
+          <div v-if="activePanel === 'status'" class="filter-panel">
+            <button
+              v-for="option in statusOptions"
+              :key="option.value"
+              type="button"
+              class="filter-option"
+              :class="{ active: statusTab === option.value }"
+              @click="selectStatus(option.value)"
+            >
+              <span class="filter-option-title">{{ option.label }}</span>
+              <span class="filter-option-count">{{ option.count }}</span>
+            </button>
+          </div>
+        </transition>
+      </div>
+
+      <div class="filter-shell">
+        <button class="filter-trigger" type="button" @click="toggleFilterPanel('type')">
+          <span class="filter-trigger-label">缴费类型</span>
+          <span class="filter-trigger-value">{{ currentTypeLabel }}</span>
+          <span class="filter-trigger-arrow" :class="{ open: activePanel === 'type' }"></span>
+        </button>
+        <transition name="panel-fade">
+          <div v-if="activePanel === 'type'" class="filter-panel">
+            <button
+              v-for="option in typeOptions"
+              :key="option.value"
+              type="button"
+              class="filter-option"
+              :class="{ active: typeTab === option.value }"
+              @click="selectType(option.value)"
+            >
+              <span class="filter-option-title">{{ option.label }}</span>
+              <span class="filter-option-count">{{ option.count }}</span>
+            </button>
+          </div>
+        </transition>
+      </div>
     </div>
+
     <div class="patient-content fee-list">
       <div class="fee-card patient-card" v-for="f in displayList" :key="f.feeOrderId">
         <div class="card-head">
@@ -35,7 +61,7 @@
           <span class="patient-status" :class="feeStatusClass(f.status)">{{ feeStatusText(f.status) }}</span>
         </div>
         <div class="patient-row"><span class="label">单号</span><span class="value">{{ f.orderNo }}</span></div>
-        <div class="patient-row"><span class="label">类型</span><span class="value">{{ businessTypeText(f.businessType) }}</span></div>
+        <div class="patient-row"><span class="label">类型</span><span class="value">{{ feeItemTypeText(resolveItemType(f)) }}</span></div>
         <div class="amount-row">
           <span>应付金额</span>
           <strong>¥{{ f.totalAmount }}</strong>
@@ -60,14 +86,16 @@
 
 <script>
 import axios from 'axios'
-import { businessTypeText, feeStatusText } from '@/utils/statusLabels'
+import { businessTypeText, feeStatusText, itemTypeText } from '@/utils/statusLabels'
+
 export default {
   data() {
     return {
-      tab: '待支付',
+      statusTab: 'all',
+      typeTab: 'all',
+      activePanel: null,
       allList: [],
       patientId: null,
-      filterPanelOpen: false,
       channels: [
         { value: 'wechat', label: '微信支付', mark: '微' },
         { value: 'alipay', label: '支付宝支付', mark: '支' },
@@ -76,7 +104,7 @@ export default {
     }
   },
   computed: {
-    filterOptions() {
+    statusOptions() {
       const labels = [
         { value: 'all', label: '全部' },
         { value: '待支付', label: '待支付' },
@@ -90,13 +118,35 @@ export default {
           : this.allList.filter(f => f.status === item.value).length
       }))
     },
-    currentTabLabel() {
-      const active = this.filterOptions.find(item => item.value === this.tab)
-      return active ? `${active.label}${active.value === 'all' ? '' : ` · ${active.count}`}` : '待支付'
+    typeOptions() {
+      const labels = [
+        { value: 'all', label: '全部' },
+        { value: '挂号', label: '挂号' },
+        { value: '检查', label: '检查' },
+        { value: '检验', label: '检验' },
+        { value: '药品', label: '药品' }
+      ]
+      return labels.map(item => ({
+        ...item,
+        count: item.value === 'all'
+          ? this.allList.length
+          : this.allList.filter(f => this.resolveItemType(f) === item.value).length
+      }))
+    },
+    currentStatusLabel() {
+      const active = this.statusOptions.find(item => item.value === this.statusTab)
+      return active ? `${active.label}${active.value === 'all' ? '' : ` · ${active.count}`}` : '全部'
+    },
+    currentTypeLabel() {
+      const active = this.typeOptions.find(item => item.value === this.typeTab)
+      return active ? `${active.label}${active.value === 'all' ? '' : ` · ${active.count}`}` : '全部'
     },
     displayList() {
-      if (this.tab === 'all') return this.allList
-      return this.allList.filter(f => f.status === this.tab)
+      return this.allList.filter(f => {
+        const statusOk = this.statusTab === 'all' || f.status === this.statusTab
+        const typeOk = this.typeTab === 'all' || this.resolveItemType(f) === this.typeTab
+        return statusOk && typeOk
+      })
     }
   },
   async mounted() {
@@ -106,7 +156,7 @@ export default {
     if (res.data.success && res.data.data) {
       this.patientId = res.data.data.patientId
       const r2 = await axios.get(`/api/fee/my/${this.patientId}`)
-      if (r2.data.success) this.allList = r2.data.data
+      if (r2.data.success) this.allList = r2.data.data || []
     }
     document.addEventListener('click', this.handleDocumentClick)
   },
@@ -116,18 +166,31 @@ export default {
   methods: {
     businessTypeText,
     feeStatusText,
-    toggleFilterPanel() {
-      this.filterPanelOpen = !this.filterPanelOpen
+    feeItemTypeText(value) {
+      return itemTypeText(value) || value || ''
     },
-    selectTab(value) {
-      this.tab = value
-      this.filterPanelOpen = false
+    resolveItemType(order) {
+      const raw = order?.itemType || order?.item_type || ''
+      const text = itemTypeText(raw)
+      if (['挂号', '检查', '检验', '药品'].includes(text)) return text
+      return ''
+    },
+    toggleFilterPanel(panel) {
+      this.activePanel = this.activePanel === panel ? null : panel
+    },
+    selectStatus(value) {
+      this.statusTab = value
+      this.activePanel = null
+    },
+    selectType(value) {
+      this.typeTab = value
+      this.activePanel = null
     },
     handleDocumentClick(event) {
-      const shell = this.$el?.querySelector('.filter-shell')
+      const shell = this.$el?.querySelector('.filter-stack')
       if (!shell) return
       if (!shell.contains(event.target)) {
-        this.filterPanelOpen = false
+        this.activePanel = null
       }
     },
     feeStatusClass(status) {
@@ -158,9 +221,15 @@ export default {
   gap: 12px;
 }
 
+.filter-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
 .filter-shell {
   position: relative;
-  margin-bottom: 12px;
 }
 
 .filter-trigger {

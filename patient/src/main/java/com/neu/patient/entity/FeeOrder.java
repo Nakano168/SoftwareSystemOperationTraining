@@ -1,6 +1,7 @@
 package com.neu.patient.entity;
 
 import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import java.math.BigDecimal;
@@ -19,6 +20,8 @@ public class FeeOrder {
     private BigDecimal paidAmount;
     private BigDecimal refundAmount;
     private String status;
+    @TableField(exist = false)
+    private String itemType;
     private Long createdBy;
     private LocalDateTime paidAt;
     private LocalDateTime createdAt;
@@ -44,6 +47,8 @@ public class FeeOrder {
     public void setRefundAmount(BigDecimal refundAmount) { this.refundAmount = refundAmount; }
     public String getStatus() { return status; }
     public void setStatus(String status) { this.status = status; }
+    public String getItemType() { return itemType; }
+    public void setItemType(String itemType) { this.itemType = itemType; }
     public Long getCreatedBy() { return createdBy; }
     public void setCreatedBy(Long createdBy) { this.createdBy = createdBy; }
     public LocalDateTime getPaidAt() { return paidAt; }

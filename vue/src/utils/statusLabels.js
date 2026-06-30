@@ -61,10 +61,10 @@ const scheduleStatusMap = {
 }
 
 const itemTypeMap = {
-  exam: '检查',
-  lab: '检验',
+  挂号: '挂号',
   检查: '检查',
-  检验: '检验'
+  检验: '检验',
+  药品: '药品'
 }
 
 const reportStatusMap = {
