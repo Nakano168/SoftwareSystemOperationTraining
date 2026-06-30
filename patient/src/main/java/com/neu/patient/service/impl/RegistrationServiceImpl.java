@@ -19,6 +19,7 @@ public class RegistrationServiceImpl implements RegistrationService {
     @Autowired private DoctorScheduleMapper doctorScheduleMapper;
     @Autowired private RegistrationMapper registrationMapper;
     @Autowired private FeeOrderMapper feeOrderMapper;
+    @Autowired private FeeOrderItemMapper feeOrderItemMapper;
 
     @Override public List<Department> getAllDepartments() { return departmentMapper.findAllActive(); }
     @Override public List<Doctor> getDoctorsByDept(Long deptId) { return doctorMapper.findByDeptId(deptId); }
@@ -68,6 +69,20 @@ public class RegistrationServiceImpl implements RegistrationService {
         order.setCreatedAt(LocalDateTime.now());
         order.setUpdatedAt(LocalDateTime.now());
         feeOrderMapper.insert(order);
+        createRegistrationFeeOrderItem(order);
+    }
+
+    private void createRegistrationFeeOrderItem(FeeOrder order) {
+        FeeOrderItem item = new FeeOrderItem();
+        item.setFeeOrderId(order.getFeeOrderId());
+        item.setItemType(EnumValues.ITEM_REGISTRATION);
+        item.setItemName("挂号费");
+        item.setUnitPrice(order.getTotalAmount() == null ? BigDecimal.ZERO : order.getTotalAmount());
+        item.setQuantity(BigDecimal.ONE);
+        item.setAmount(order.getTotalAmount() == null ? BigDecimal.ZERO : order.getTotalAmount());
+        item.setStatus(EnumValues.FEE_ORDER_WAITING_PAYMENT);
+        item.setCreatedAt(LocalDateTime.now());
+        feeOrderItemMapper.insert(item);
     }
 
     @Override public List<Registration> getMyRegistrations(Long patientId) { return registrationMapper.findByPatientId(patientId); }

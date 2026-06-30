@@ -56,6 +56,7 @@ public final class EnumValues {
     public static final String EXAM_LAB_EXECUTING = "执行中";
     public static final String EXAM_LAB_COMPLETED = "已完成";
 
+    public static final String ITEM_REGISTRATION = "挂号";
     public static final String REPORT_DRAFT = "草稿";
     public static final String REPORT_PUBLISHED = "已发布";
     public static final String REPORT_REVIEWED = "已回阅";

@@ -173,6 +173,7 @@ export default {
       const raw = order?.itemType || order?.item_type || ''
       const text = itemTypeText(raw)
       if (['挂号', '检查', '检验', '药品'].includes(text)) return text
+      if (order?.businessType === 'REGISTRATION' || order?.business_type === 'REGISTRATION') return '挂号'
       return ''
     },
     toggleFilterPanel(panel) {
