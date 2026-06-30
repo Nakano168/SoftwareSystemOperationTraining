@@ -52,6 +52,7 @@ public class PatientAuthController {
         switch (result) {
             case 1: return Result.ok("注册成功，请登录");
             case 0: return Result.fail("用户名已存在");
+            case -2: return Result.fail("您已注册过帐号，请直接登录");
             default: return Result.fail("注册失败");
         }
     }

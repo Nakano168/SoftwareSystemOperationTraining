@@ -36,6 +36,14 @@ public class PatientServiceImpl implements PatientService {
         if (existing != null) {
             return 0;
         }
+        Long phoneCount = patientMapper.countByPhone(user.getPhone());
+        if (phoneCount != null && phoneCount > 0) {
+            return -2;
+        }
+        Long idCardCount = patientMapper.countByIdCard(patient.getIdCard());
+        if (idCardCount != null && idCardCount > 0) {
+            return -2;
+        }
 
         user.setRoleId(getPatientRoleId());
         user.setStatus(1);
