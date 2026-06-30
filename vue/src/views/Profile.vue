@@ -50,6 +50,9 @@
         <button class="menu-item" @click="$router.push('/patient/exam-reports')">
           <span class="menu-icon">检</span><span>检查报告</span><span class="arrow">›</span>
         </button>
+        <button class="menu-item" @click="$router.push('/patient/change-password')">
+          <span class="menu-icon">密</span><span>修改密码</span><span class="arrow">›</span>
+        </button>
         <button class="menu-item logout" @click="logout">
           <span class="menu-icon">退</span><span>退出登录</span><span class="arrow">›</span>
         </button>

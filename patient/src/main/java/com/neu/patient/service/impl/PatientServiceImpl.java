@@ -69,6 +69,21 @@ public class PatientServiceImpl implements PatientService {
     }
 
     @Override
+    @Transactional
+    public boolean changePassword(Long userId, String oldPassword, String newPassword) {
+        SysUser user = sysUserMapper.selectById(userId);
+        if (user == null) {
+            return false;
+        }
+        if (oldPassword == null || !oldPassword.equals(user.getPassword())) {
+            return false;
+        }
+        user.setPassword(newPassword);
+        user.setUpdatedAt(LocalDateTime.now());
+        return sysUserMapper.updateById(user) > 0;
+    }
+
+    @Override
     public Patient getPatientInfo(Long patientId) {
         return patientMapper.selectById(patientId);
     }

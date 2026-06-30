@@ -7,6 +7,8 @@ public interface PatientService {
     int register(SysUser user, Patient patient);
     // 患者登录
     SysUser login(String username, String password);
+    // 修改登录密码
+    boolean changePassword(Long userId, String oldPassword, String newPassword);
     // 获取患者信息
     Patient getPatientInfo(Long patientId);
     Patient getPatientByUserId(Long userId);

@@ -68,6 +68,16 @@ public class PatientAuthController {
         return patientService.updatePatient(patient) ? Result.ok("修改成功") : Result.fail("修改失败");
     }
 
+    @PostMapping("/change-password")
+    public Result<?> changePassword(@RequestBody ChangePasswordRequest req) {
+        if (req.getUserId() == null) return Result.fail("登录信息已失效，请重新登录");
+        if (isBlank(req.getOldPassword())) return Result.fail("请输入原密码");
+        if (isBlank(req.getNewPassword())) return Result.fail("请输入新密码");
+        if (req.getNewPassword().trim().length() < 6) return Result.fail("新密码至少6位");
+        boolean changed = patientService.changePassword(req.getUserId(), req.getOldPassword().trim(), req.getNewPassword().trim());
+        return changed ? Result.ok("密码修改成功，请重新登录") : Result.fail("原密码不正确");
+    }
+
     private String validateRegisterRequest(RegisterRequest req) {
         if (isBlank(req.getUsername())) return "请输入用户名";
         if (isBlank(req.getPassword())) return "请输入密码";
@@ -112,5 +122,18 @@ public class PatientAuthController {
         public void setGender(String gender) { this.gender = gender; }
         public String getIdCard() { return idCard; }
         public void setIdCard(String idCard) { this.idCard = idCard; }
+    }
+
+    static class ChangePasswordRequest {
+        private Long userId;
+        private String oldPassword;
+        private String newPassword;
+
+        public Long getUserId() { return userId; }
+        public void setUserId(Long userId) { this.userId = userId; }
+        public String getOldPassword() { return oldPassword; }
+        public void setOldPassword(String oldPassword) { this.oldPassword = oldPassword; }
+        public String getNewPassword() { return newPassword; }
+        public void setNewPassword(String newPassword) { this.newPassword = newPassword; }
     }
 }
