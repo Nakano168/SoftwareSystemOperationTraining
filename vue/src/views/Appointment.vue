@@ -44,7 +44,6 @@
             <span class="list-desc">{{ d.doctorType || '医生' }} {{ d.title || '' }} · {{ d.doctorNo || '' }}</span>
             <span class="list-desc">{{ d.specialty || '暂无介绍' }}</span>
           </span>
-          <span class="doctor-status" :class="{ full: isDoctorFull(d) }">{{ d.appointmentStatus || '约满' }}</span>
         </button>
         <div v-if="doctors.length === 0" class="patient-empty">该科室暂无医生排班</div>
       </div>
@@ -161,11 +160,11 @@ export default {
       } catch(e) {}
     },
     isDoctorFull(d) {
-      return (d.appointmentStatus || '约满') === '约满' || Number(d.availableQuota || 0) <= 0
+      return (d.appointmentStatus || '约满') !== '可预约' || Number(d.availableQuota || 0) <= 0
     },
     handleDoctorClick(d) {
       if (this.isDoctorFull(d)) {
-        feedback.toast('该医生可预约人数为零')
+        feedback.toast('该医生不可预约')
         return
       }
       this.selectDoctor(d)
@@ -348,6 +347,7 @@ export default {
 .doctor-item.full {
   color: #94a3b8;
   background: #f3f6f9;
+  cursor: not-allowed;
 }
 
 .doctor-item.full .doctor-avatar {
