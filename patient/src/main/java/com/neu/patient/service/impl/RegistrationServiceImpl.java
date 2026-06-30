@@ -27,6 +27,11 @@ public class RegistrationServiceImpl implements RegistrationService {
     @Override
     @Transactional
     public Registration registerAppointment(Registration reg) {
+        DoctorSchedule schedule = doctorScheduleMapper.selectById(reg.getScheduleId());
+        if (schedule == null || schedule.getRemainQuota() == null || schedule.getRemainQuota() <= 0
+                || !EnumValues.SCHEDULE_AVAILABLE.equals(schedule.getStatus())) {
+            throw new IllegalStateException("该医生可预约人数为零");
+        }
         reg.setRegistrationNo("RG" + System.currentTimeMillis());
         reg.setFeeStatus(EnumValues.FEE_WAITING_PAYMENT);
         reg.setStatus(EnumValues.REGISTRATION_WAITING_VISIT);
@@ -35,11 +40,11 @@ public class RegistrationServiceImpl implements RegistrationService {
         reg.setUpdatedAt(LocalDateTime.now());
         registrationMapper.insert(reg);
         createRegistrationFeeOrder(reg);
-        DoctorSchedule schedule = doctorScheduleMapper.selectById(reg.getScheduleId());
-        if (schedule != null && schedule.getRemainQuota() > 0) {
-            schedule.setRemainQuota(schedule.getRemainQuota() - 1);
-            doctorScheduleMapper.updateById(schedule);
+        schedule.setRemainQuota(schedule.getRemainQuota() - 1);
+        if (schedule.getRemainQuota() == 0) {
+            schedule.setStatus(EnumValues.SCHEDULE_FULL);
         }
+        doctorScheduleMapper.updateById(schedule);
         return reg;
     }
 

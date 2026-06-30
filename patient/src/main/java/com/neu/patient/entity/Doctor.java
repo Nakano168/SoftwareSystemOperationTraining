@@ -13,6 +13,10 @@ public class Doctor {
     private Long deptId;
     @TableField(exist = false)
     private String realName;
+    @TableField(exist = false)
+    private String appointmentStatus;
+    @TableField(exist = false)
+    private Integer availableQuota;
     private String doctorNo;
     private String doctorType;
     private String title;
@@ -30,6 +34,10 @@ public class Doctor {
     public void setDeptId(Long deptId) { this.deptId = deptId; }
     public String getRealName() { return realName; }
     public void setRealName(String realName) { this.realName = realName; }
+    public String getAppointmentStatus() { return appointmentStatus; }
+    public void setAppointmentStatus(String appointmentStatus) { this.appointmentStatus = appointmentStatus; }
+    public Integer getAvailableQuota() { return availableQuota; }
+    public void setAvailableQuota(Integer availableQuota) { this.availableQuota = availableQuota; }
     public String getDoctorNo() { return doctorNo; }
     public void setDoctorNo(String doctorNo) { this.doctorNo = doctorNo; }
     public String getDoctorType() { return doctorType; }

@@ -29,8 +29,12 @@ public class RegistrationController {
 
     @PostMapping("/book")
     public Result<Registration> book(@RequestBody Registration reg) {
-        Registration result = registrationService.registerAppointment(reg);
-        return Result.ok("挂号成功", result);
+        try {
+            Registration result = registrationService.registerAppointment(reg);
+            return Result.ok("挂号成功", result);
+        } catch (IllegalStateException e) {
+            return Result.fail(e.getMessage());
+        }
     }
 
     @GetMapping("/my/{patientId}")

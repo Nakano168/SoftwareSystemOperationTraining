@@ -8,6 +8,6 @@ import java.util.List;
 
 @Mapper
 public interface DepartmentMapper extends BaseMapper<Department> {
-    @Select("SELECT * FROM department WHERE status = 1")
+    @Select("SELECT * FROM department WHERE status = 1 ORDER BY COALESCE(parent_id, dept_id), parent_id IS NOT NULL, sort_order, dept_id")
     List<Department> findAllActive();
 }
