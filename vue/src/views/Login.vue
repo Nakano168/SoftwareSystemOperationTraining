@@ -84,16 +84,33 @@ export default {
       try {
         const res = await axios.post(API + '/patient/login', this.loginForm)
         if (res.data.success) {
-          sessionStorage.setItem('userId', res.data.data.userId)
-          sessionStorage.setItem('username', res.data.data.username)
-          sessionStorage.setItem('realName', res.data.data.realName)
-          this.$router.push('/patient/home')
+          await this.finishLogin(res.data.data)
         } else {
+          if (res.data.message === '当前帐号已在别处登录，是否在本设备登录，别处账号将自动退出') {
+            const ok = await feedback.confirm(res.data.message)
+            if (!ok) {
+              feedback.toast('登陆失败，账户已在别处登录')
+              return
+            }
+            const forceRes = await axios.post(API + '/patient/login-force', this.loginForm)
+            if (forceRes.data.success) {
+              await this.finishLogin(forceRes.data.data)
+            } else {
+              feedback.toast(forceRes.data.message || '登录失败')
+            }
+            return
+          }
           feedback.toast(res.data.message || '登录失败')
         }
       } catch (e) {
         feedback.toast(e.response?.data?.message || '登录失败，请稍后重试')
       }
+    },
+    async finishLogin(user) {
+      sessionStorage.setItem('userId', user.userId)
+      sessionStorage.setItem('username', user.username)
+      sessionStorage.setItem('realName', user.realName)
+      this.$router.push('/patient/home')
     },
     async handleRegister() {
       try {
@@ -107,6 +124,17 @@ export default {
       } catch (e) {
         feedback.toast(e.response?.data?.message || '注册失败，请稍后重试')
       }
+    },
+    async handleLogout() {
+      const userId = sessionStorage.getItem('userId')
+      if (userId) {
+        try {
+          await axios.post(API + `/patient/logout/${userId}`)
+        } catch (e) {}
+      }
+      sessionStorage.removeItem('userId')
+      sessionStorage.removeItem('username')
+      sessionStorage.removeItem('realName')
     }
   }
 }

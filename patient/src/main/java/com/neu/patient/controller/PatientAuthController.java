@@ -24,9 +24,30 @@ public class PatientAuthController {
     public Result<SysUser> login(@RequestBody LoginRequest req) {
         SysUser user = patientService.login(req.getUsername(), req.getPassword());
         if (user != null) {
+            SysUser dbUser = patientService.getUserById(user.getUserId());
+            Integer currentStatus = dbUser == null ? null : dbUser.getStatus();
+            if (currentStatus != null && currentStatus == 1) {
+                return Result.fail("当前帐号已在别处登录，是否在本设备登录，别处账号将自动退出");
+            }
+            patientService.forceLogin(req.getUsername(), req.getPassword());
+            user.setStatus(1);
             return Result.ok("登录成功", user);
         }
         return Result.fail("用户名或密码错误");
+    }
+
+    @PostMapping("/login-force")
+    public Result<SysUser> loginForce(@RequestBody LoginRequest req) {
+        SysUser user = patientService.forceLogin(req.getUsername(), req.getPassword());
+        if (user != null) {
+            return Result.ok("登录成功", user);
+        }
+        return Result.fail("用户名或密码错误");
+    }
+
+    @PostMapping("/logout/{userId}")
+    public Result<?> logout(@PathVariable Long userId) {
+        return patientService.logout(userId) ? Result.ok("退出成功") : Result.fail("退出失败");
     }
 
     @PostMapping("/register")

@@ -79,7 +79,13 @@ export default {
       if (value === '女' || value === 'female') return '女'
       return value || '-'
     },
-    logout() {
+    async logout() {
+      const userId = sessionStorage.getItem('userId')
+      if (userId) {
+        try {
+          await axios.post(`/api/patient/logout/${userId}`)
+        } catch (e) {}
+      }
       sessionStorage.clear()
       this.$router.push('/')
     }

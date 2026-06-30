@@ -1,6 +1,7 @@
 import { createRouter, createWebHashHistory } from 'vue-router'
 import Login from '../views/Login.vue'
 import PatientIndex from '../views/PatientIndex.vue'
+import axios from 'axios'
 
 const routes = [
   {
@@ -103,6 +104,18 @@ router.beforeEach((to, from, next) => {
     }
   } else {
     next()
+  }
+})
+
+router.afterEach(async (to, from) => {
+  const userId = sessionStorage.getItem('userId')
+  if (from.path.startsWith('/patient') && to.path === '/' && userId) {
+    try {
+      await axios.post(`/api/patient/logout/${userId}`)
+    } catch (e) {}
+    sessionStorage.removeItem('userId')
+    sessionStorage.removeItem('username')
+    sessionStorage.removeItem('realName')
   }
 })
 

@@ -60,12 +60,33 @@ public class PatientServiceImpl implements PatientService {
 
     @Override
     public SysUser login(String username, String password) {
+        return sysUserMapper.loginPatient(username, password);
+    }
+
+    @Override
+    @Transactional
+    public SysUser forceLogin(String username, String password) {
         SysUser user = sysUserMapper.loginPatient(username, password);
-        if (user != null) {
-            user.setLastLoginAt(LocalDateTime.now());
-            sysUserMapper.updateById(user);
+        if (user == null) {
+            return null;
         }
+        sysUserMapper.updateLoginStatus(user.getUserId(), 1);
+        user.setStatus(1);
         return user;
+    }
+
+    @Override
+    public SysUser getUserById(Long userId) {
+        return sysUserMapper.selectById(userId);
+    }
+
+    @Override
+    @Transactional
+    public boolean logout(Long userId) {
+        if (userId == null) {
+            return false;
+        }
+        return sysUserMapper.updateLoginStatus(userId, 0) > 0;
     }
 
     @Override
