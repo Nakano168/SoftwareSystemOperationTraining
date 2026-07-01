@@ -8,6 +8,9 @@ import java.util.List;
 
 @Mapper
 public interface AiConsultationMapper extends BaseMapper<AiConsultation> {
-    @Select("SELECT * FROM ai_consultation WHERE patient_id = #{patientId} ORDER BY created_at DESC")
+    @Select("SELECT ac.*, d.dept_name AS recommendedDeptName " +
+            "FROM ai_consultation ac " +
+            "LEFT JOIN department d ON d.dept_id = ac.recommended_dept_id " +
+            "WHERE ac.patient_id = #{patientId} ORDER BY ac.created_at DESC")
     List<AiConsultation> findByPatientId(Long patientId);
 }

@@ -105,6 +105,9 @@ const prescriptionItemStatusMap = {
 const riskLevelMap = {
   normal: '普通',
   urgent: '紧急',
+  warning: '紧急',
+  high: '紧急',
+  critical: '紧急',
   unknown: '普通',
   普通: '普通',
   紧急: '紧急'

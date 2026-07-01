@@ -50,14 +50,51 @@
           <span class="panel-badge">本地缓存</span>
         </div>
         <div class="history-list">
-          <div class="history-item" v-for="item in history" :key="item.id">
+          <button class="history-item" v-for="item in history" :key="item.id" @click="openHistory(item)">
             <div class="history-top">
-              <span>{{ item.title }}</span>
+              <span class="history-title">{{ item.title }}</span>
               <span class="history-type">{{ item.type }}</span>
             </div>
             <div class="history-text">{{ item.preview }}</div>
-          </div>
+          </button>
           <div v-if="history.length === 0" class="ai-empty">暂无记录</div>
+        </div>
+      </section>
+
+      <section v-if="selectedHistory" class="ai-panel patient-card">
+        <div class="panel-head">
+          <span class="panel-title">记录详情</span>
+          <button class="detail-close" @click="selectedHistory = null">关闭</button>
+        </div>
+        <div class="detail-list">
+          <div class="detail-row">
+            <span>主诉</span>
+            <p>{{ selectedHistory.raw.chiefComplaint || '未记录' }}</p>
+          </div>
+          <div class="detail-row">
+            <span>症状详情</span>
+            <p>{{ selectedHistory.raw.symptomDetail || '未记录' }}</p>
+          </div>
+          <div class="detail-row">
+            <span>风险等级</span>
+            <p>{{ selectedHistory.type }}</p>
+          </div>
+          <div class="detail-row">
+            <span>推荐科室</span>
+            <p>{{ selectedHistory.raw.recommendedDeptName || (selectedHistory.raw.recommendedDeptId ? `科室ID: ${selectedHistory.raw.recommendedDeptId}` : '未匹配') }}</p>
+          </div>
+          <div class="detail-row">
+            <span>AI摘要</span>
+            <p>{{ selectedHistory.raw.aiSummary || '未生成' }}</p>
+          </div>
+          <div class="detail-row">
+            <span>AI结果</span>
+            <p>{{ selectedHistory.raw.aiResult || '未生成' }}</p>
+          </div>
+          <div class="detail-row">
+            <span>生成时间</span>
+            <p>{{ selectedHistory.raw.createdAt || '未记录' }}</p>
+          </div>
         </div>
       </section>
     </div>
@@ -77,7 +114,8 @@ export default {
       resultText: '',
       resultState: 'idle',
       patientId: null,
-      history: []
+      history: [],
+      selectedHistory: null
     }
   },
   computed: {
@@ -126,7 +164,8 @@ export default {
             id: item.consultationId,
             type: riskLevelText(item.riskLevel) || 'AI',
             title: item.chiefComplaint || '问诊记录',
-            preview: item.aiSummary || item.aiResult || ''
+            preview: item.aiSummary || item.aiResult || '',
+            raw: item
           }))
         }
       } catch (e) {}
@@ -157,7 +196,8 @@ export default {
             id: data.consultationId || Date.now(),
             type: riskLevelText(data.riskLevel) || 'AI',
             title: text.slice(0, 12),
-            preview: this.resultText.slice(0, 24)
+            preview: this.resultText.slice(0, 24),
+            raw: data
           })
           this.inputText = ''
         } else {
@@ -173,6 +213,9 @@ export default {
       this.inputText = ''
       this.resultText = ''
       this.resultState = 'idle'
+    },
+    openHistory(item) {
+      this.selectedHistory = item
     }
   }
 }
@@ -237,12 +280,70 @@ export default {
 }
 .history-list { display: flex; flex-direction: column; gap: 10px; }
 .history-item {
+  width: 100%;
+  text-align: left;
   padding: 12px;
   border-radius: 14px;
   background: #f9fbfe;
   border: 1px solid var(--line-soft);
+  cursor: pointer;
+  font: inherit;
 }
-.history-top { display: flex; justify-content: space-between; gap: 10px; font-size: 14px; font-weight: 700; color: var(--ink-strong); }
-.history-type { color: var(--medical-blue); }
+.history-item:active {
+  transform: scale(0.99);
+}
+.history-top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--ink-strong);
+}
+.history-title {
+  flex: 1 1 auto;
+  min-width: 0;
+  line-height: 1.45;
+}
+.history-type {
+  flex: 0 0 44px;
+  min-width: 44px;
+  color: var(--medical-blue);
+  text-align: center;
+  white-space: nowrap;
+}
 .history-text { margin-top: 6px; color: var(--ink-muted); font-size: 13px; line-height: 1.6; }
+.detail-close {
+  border: 0;
+  border-radius: 999px;
+  padding: 5px 12px;
+  color: var(--medical-blue);
+  background: var(--medical-blue-soft);
+  font-size: 12px;
+  font-weight: 800;
+}
+.detail-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.detail-row {
+  padding: 12px;
+  border-radius: 14px;
+  background: #f7fbff;
+}
+.detail-row span {
+  display: block;
+  margin-bottom: 6px;
+  color: var(--ink-muted);
+  font-size: 12px;
+  font-weight: 800;
+}
+.detail-row p {
+  color: var(--ink-main);
+  font-size: 14px;
+  line-height: 1.7;
+  white-space: pre-wrap;
+}
 </style>

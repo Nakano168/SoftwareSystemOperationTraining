@@ -2,6 +2,7 @@ package com.neu.patient.entity;
 
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
+import com.baomidou.mybatisplus.annotation.TableField;
 import java.time.LocalDateTime;
 
 @TableName("ai_consultation")
@@ -17,6 +18,8 @@ public class AiConsultation {
     private String aiResult;
     private String status;
     private LocalDateTime createdAt;
+    @TableField(exist = false)
+    private String recommendedDeptName;
 
     public Long getConsultationId() { return consultationId; }
     public void setConsultationId(Long consultationId) { this.consultationId = consultationId; }
@@ -38,4 +41,6 @@ public class AiConsultation {
     public void setStatus(String status) { this.status = status; }
     public LocalDateTime getCreatedAt() { return createdAt; }
     public void setCreatedAt(LocalDateTime createdAt) { this.createdAt = createdAt; }
+    public String getRecommendedDeptName() { return recommendedDeptName; }
+    public void setRecommendedDeptName(String recommendedDeptName) { this.recommendedDeptName = recommendedDeptName; }
 }

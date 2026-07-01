@@ -41,6 +41,7 @@ public class AiConsultationServiceImpl implements AiConsultationService {
         String systemPrompt = """
                 你是医院导诊助手。只能基于给定候选项回答，不得编造数据库不存在的科室、医生、病历、检查、处方、费用信息。
                 输出必须是 JSON，字段包含：summary, riskLevel, recommendedDept, recommendedDoctor, aiResult, note。
+                riskLevel 只能返回“普通”或“紧急”。
                 recommendedDept 必须使用候选科室中的完整科室名称；如果候选科室里没有合适内容，recommendedDept 置空，note 说明未找到匹配项。
                 """;
         String userPrompt = """
@@ -69,8 +70,9 @@ public class AiConsultationServiceImpl implements AiConsultationService {
         consultation.setChiefComplaint(request.getContent());
         consultation.setSymptomDetail(request.getContent());
         consultation.setAiSummary(parsed.getSummary());
-        consultation.setRiskLevel(parsed.getRiskLevel());
+        consultation.setRiskLevel(normalizeRiskLevel(parsed.getRiskLevel()));
         consultation.setRecommendedDeptId(matchDepartmentId(parsed.getRecommendedDept(), departments));
+        consultation.setRecommendedDeptName(matchDepartmentName(consultation.getRecommendedDeptId(), departments));
         consultation.setAiResult(parsed.getAiResult() == null || parsed.getAiResult().isBlank() ? aiText : parsed.getAiResult());
         consultation.setStatus(EnumValues.AI_GENERATED);
         aiConsultationMapper.insert(consultation);
@@ -103,6 +105,23 @@ public class AiConsultationServiceImpl implements AiConsultationService {
         return value == null ? "" : String.valueOf(value);
     }
 
+    private String normalizeRiskLevel(String riskLevel) {
+        if (riskLevel == null || riskLevel.isBlank()) {
+            return EnumValues.RISK_NORMAL;
+        }
+        String value = riskLevel.trim().toLowerCase();
+        if (EnumValues.RISK_URGENT.equals(riskLevel.trim())
+                || "urgent".equals(value)
+                || "warning".equals(value)
+                || "high".equals(value)
+                || "critical".equals(value)
+                || value.contains("急")
+                || value.contains("危")) {
+            return EnumValues.RISK_URGENT;
+        }
+        return EnumValues.RISK_NORMAL;
+    }
+
     private Long matchDepartmentId(String recommendedDept, List<Department> departments) {
         if (recommendedDept == null || recommendedDept.isBlank()) {
             return null;
@@ -113,6 +132,17 @@ public class AiConsultationServiceImpl implements AiConsultationService {
                 .map(Department::getDeptId)
                 .findFirst()
                 .orElse(null);
+    }
+
+    private String matchDepartmentName(Long recommendedDeptId, List<Department> departments) {
+        if (recommendedDeptId == null) {
+            return "";
+        }
+        return departments.stream()
+                .filter(d -> recommendedDeptId.equals(d.getDeptId()))
+                .map(Department::getDeptName)
+                .findFirst()
+                .orElse("");
     }
 
     private String safe(String value) {
