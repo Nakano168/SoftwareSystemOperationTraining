@@ -65,9 +65,13 @@ const routes = [
         component: () => import('@/views/Profile.vue')
       },
       {
+        path: '/patient/edit-profile',
+        name: 'EditProfile',
+        component: () => import('@/views/EditProfile.vue')
+      },
+      {
         path: '/patient/change-password',
-        name: 'ChangePassword',
-        component: () => import('@/views/ChangePassword.vue')
+        redirect: '/patient/edit-profile'
       },
       {
         path: '/patient/medical-record-detail/:id',

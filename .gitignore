@@ -4,6 +4,9 @@
 # But not these folders
 !patient/
 !vue/
+!vue/src/
+!vue/src/views/
+!vue/src/views/EditProfile.vue
 
 # And not this file
 !.gitignore

@@ -115,8 +115,18 @@ public class PatientServiceImpl implements PatientService {
     }
 
     @Override
+    @Transactional
     public boolean updatePatient(Patient patient) {
-        return patientMapper.updateById(patient) > 0;
+        patient.setUpdatedAt(LocalDateTime.now());
+        boolean updated = patientMapper.updateById(patient) > 0;
+        if (updated && patient.getUserId() != null && patient.getPhone() != null) {
+            SysUser user = new SysUser();
+            user.setUserId(patient.getUserId());
+            user.setPhone(patient.getPhone());
+            user.setUpdatedAt(LocalDateTime.now());
+            sysUserMapper.updateById(user);
+        }
+        return updated;
     }
 
     @Override

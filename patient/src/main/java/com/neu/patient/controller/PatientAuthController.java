@@ -94,7 +94,6 @@ public class PatientAuthController {
         if (req.getUserId() == null) return Result.fail("登录信息已失效，请重新登录");
         if (isBlank(req.getOldPassword())) return Result.fail("请输入原密码");
         if (isBlank(req.getNewPassword())) return Result.fail("请输入新密码");
-        if (req.getNewPassword().trim().length() < 6) return Result.fail("新密码至少6位");
         boolean changed = patientService.changePassword(req.getUserId(), req.getOldPassword().trim(), req.getNewPassword().trim());
         return changed ? Result.ok("密码修改成功，请重新登录") : Result.fail("原密码不正确");
     }
