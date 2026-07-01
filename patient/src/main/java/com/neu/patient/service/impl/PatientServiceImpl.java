@@ -117,6 +117,15 @@ public class PatientServiceImpl implements PatientService {
     @Override
     @Transactional
     public boolean updatePatient(Patient patient) {
+        if (patient.getEmergencyContact() != null && patient.getEmergencyContact().trim().isEmpty()) {
+            patient.setEmergencyContact(null);
+        }
+        if (patient.getEmergencyPhone() != null && patient.getEmergencyPhone().trim().isEmpty()) {
+            patient.setEmergencyPhone(null);
+        }
+        if (patient.getAddress() != null && patient.getAddress().trim().isEmpty()) {
+            patient.setAddress(null);
+        }
         patient.setUpdatedAt(LocalDateTime.now());
         boolean updated = patientMapper.updateById(patient) > 0;
         if (updated && patient.getUserId() != null && patient.getPhone() != null) {

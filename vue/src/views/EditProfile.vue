@@ -23,6 +23,14 @@
             <input v-model.trim="profileForm.phone" type="text" class="form-input" placeholder="请输入手机号" />
           </label>
           <label class="form-item">
+            <span>紧急联系人</span>
+            <input v-model.trim="profileForm.emergencyContact" type="text" class="form-input" placeholder="未设置" />
+          </label>
+          <label class="form-item">
+            <span>紧急联系电话</span>
+            <input v-model.trim="profileForm.emergencyPhone" type="text" class="form-input" placeholder="未设置" />
+          </label>
+          <label class="form-item">
             <span>地址</span>
             <textarea v-model.trim="profileForm.address" class="form-input textarea-input" placeholder="请输入地址"></textarea>
           </label>
@@ -64,6 +72,8 @@ export default {
       patientInfo: null,
       profileForm: {
         phone: '',
+        emergencyContact: '',
+        emergencyPhone: '',
         address: ''
       },
       form: {
@@ -89,6 +99,8 @@ export default {
         if (res.data.success) {
           this.patientInfo = res.data.data || {}
           this.profileForm.phone = this.patientInfo.phone || ''
+          this.profileForm.emergencyContact = this.patientInfo.emergencyContact || ''
+          this.profileForm.emergencyPhone = this.patientInfo.emergencyPhone || ''
           this.profileForm.address = this.patientInfo.address || ''
         } else {
           feedback.toast(res.data.message || '获取个人信息失败')
@@ -113,7 +125,9 @@ export default {
           patientId: this.patientInfo.patientId,
           userId: Number(userId),
           phone: this.profileForm.phone,
-          address: this.profileForm.address
+          emergencyContact: this.profileForm.emergencyContact || null,
+          emergencyPhone: this.profileForm.emergencyPhone || null,
+          address: this.profileForm.address || null
         })
         if (res.data.success) {
           feedback.toast(res.data.message || '保存成功')

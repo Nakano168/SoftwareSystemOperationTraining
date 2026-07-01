@@ -13,6 +13,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.time.LocalDate;
+
 @RestController
 @RequestMapping("/api/patient")
 public class PatientAuthController {
@@ -66,8 +68,13 @@ public class PatientAuthController {
         Patient patient = new Patient();
         patient.setPatientName(req.getRealName().trim());
         patient.setGender(req.getGender());
+        patient.setBirthday(req.getBirthday());
         patient.setPhone(req.getPhone().trim());
         patient.setIdCard(req.getIdCard().trim());
+        patient.setEmergencyContact(trimToNull(req.getEmergencyContact()));
+        patient.setEmergencyPhone(trimToNull(req.getEmergencyPhone()));
+        patient.setAddress(trimToNull(req.getAddress()));
+        patient.setAllergyHistory(isBlank(req.getAllergyHistory()) ? "无" : req.getAllergyHistory().trim());
 
         int result = patientService.register(user, patient);
         switch (result) {
@@ -112,6 +119,10 @@ public class PatientAuthController {
         return value == null || value.trim().isEmpty();
     }
 
+    private String trimToNull(String value) {
+        return isBlank(value) ? null : value.trim();
+    }
+
     static class LoginRequest {
         private String username;
         private String password;
@@ -127,8 +138,13 @@ public class PatientAuthController {
         private String password;
         private String realName;
         private String phone;
+        private LocalDate birthday;
+        private String emergencyContact;
+        private String emergencyPhone;
         private String gender;
         private String idCard;
+        private String address;
+        private String allergyHistory;
 
         public String getUsername() { return username; }
         public void setUsername(String username) { this.username = username; }
@@ -138,10 +154,20 @@ public class PatientAuthController {
         public void setRealName(String realName) { this.realName = realName; }
         public String getPhone() { return phone; }
         public void setPhone(String phone) { this.phone = phone; }
+        public LocalDate getBirthday() { return birthday; }
+        public void setBirthday(LocalDate birthday) { this.birthday = birthday; }
+        public String getEmergencyContact() { return emergencyContact; }
+        public void setEmergencyContact(String emergencyContact) { this.emergencyContact = emergencyContact; }
+        public String getEmergencyPhone() { return emergencyPhone; }
+        public void setEmergencyPhone(String emergencyPhone) { this.emergencyPhone = emergencyPhone; }
         public String getGender() { return gender; }
         public void setGender(String gender) { this.gender = gender; }
         public String getIdCard() { return idCard; }
         public void setIdCard(String idCard) { this.idCard = idCard; }
+        public String getAddress() { return address; }
+        public void setAddress(String address) { this.address = address; }
+        public String getAllergyHistory() { return allergyHistory; }
+        public void setAllergyHistory(String allergyHistory) { this.allergyHistory = allergyHistory; }
     }
 
     static class ChangePasswordRequest {

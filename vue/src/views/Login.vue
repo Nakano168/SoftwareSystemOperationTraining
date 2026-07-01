@@ -33,24 +33,49 @@
 
           <div v-else class="form-container">
             <label class="form-item">
-              <span>用户名</span>
+              <span><b>*</b>用户名</span>
               <input v-model.trim="registerForm.username" type="text" placeholder="设置登录用户名" class="form-input">
             </label>
             <label class="form-item">
-              <span>密码</span>
+              <span><b>*</b>密码</span>
               <input v-model="registerForm.password" type="password" placeholder="设置登录密码" class="form-input">
             </label>
             <label class="form-item">
-              <span>真实姓名</span>
+              <span><b>*</b>真实姓名</span>
               <input v-model.trim="registerForm.realName" type="text" placeholder="请输入真实姓名" class="form-input">
             </label>
             <label class="form-item">
-              <span>手机号</span>
+              <span><b>*</b>手机号</span>
               <input v-model.trim="registerForm.phone" type="text" placeholder="请输入手机号" class="form-input">
             </label>
             <label class="form-item">
-              <span>身份证号</span>
+              <span>生日</span>
+              <input
+                v-model="registerForm.birthday"
+                type="text"
+                placeholder="请选择生日，如 2000-01-01"
+                class="form-input"
+              >
+            </label>
+            <label class="form-item">
+              <span>紧急联系人</span>
+              <input v-model.trim="registerForm.emergencyContact" type="text" placeholder="请输入紧急联系人" class="form-input">
+            </label>
+            <label class="form-item">
+              <span>紧急联系电话</span>
+              <input v-model.trim="registerForm.emergencyPhone" type="text" placeholder="请输入紧急联系电话" class="form-input">
+            </label>
+            <label class="form-item">
+              <span><b>*</b>身份证号</span>
               <input v-model.trim="registerForm.idCard" type="text" placeholder="请输入身份证号" class="form-input">
+            </label>
+            <label class="form-item">
+              <span>地址</span>
+              <textarea v-model.trim="registerForm.address" placeholder="可不填" class="form-input textarea-input"></textarea>
+            </label>
+            <label class="form-item">
+              <span>过敏信息</span>
+              <textarea v-model.trim="registerForm.allergyHistory" placeholder="不填默认为无" class="form-input textarea-input"></textarea>
             </label>
             <div class="gender-row">
               <span>性别</span>
@@ -76,7 +101,19 @@ export default {
     return {
       activeTab: 'login',
       loginForm: { username: '', password: '' },
-      registerForm: { username: '', password: '', realName: '', phone: '', idCard: '', gender: '男' }
+      registerForm: {
+        username: '',
+        password: '',
+        realName: '',
+        phone: '',
+        birthday: '',
+        emergencyContact: '',
+        emergencyPhone: '',
+        idCard: '',
+        address: '',
+        allergyHistory: '',
+        gender: '男'
+      }
     }
   },
   methods: {
@@ -113,8 +150,19 @@ export default {
       this.$router.push('/patient/home')
     },
     async handleRegister() {
+      if (this.registerForm.birthday && !/^\d{4}-\d{2}-\d{2}$/.test(this.registerForm.birthday)) {
+        feedback.toast('生日格式请填写为 YYYY-MM-DD')
+        return
+      }
+      const payload = {
+        ...this.registerForm,
+        birthday: this.registerForm.birthday || null,
+        emergencyContact: this.registerForm.emergencyContact || null,
+        emergencyPhone: this.registerForm.emergencyPhone || null,
+        address: this.registerForm.address || null
+      }
       try {
-        const res = await axios.post(API + '/patient/register', this.registerForm)
+        const res = await axios.post(API + '/patient/register', payload)
         if (res.data.success) {
           feedback.toast(res.data.message)
           this.activeTab = 'login'
@@ -296,6 +344,11 @@ export default {
   font-weight: 700;
 }
 
+.form-item b {
+  color: var(--medical-red);
+  margin-right: 3px;
+}
+
 .form-input {
   width: 100%;
   height: 44px;
@@ -308,7 +361,15 @@ export default {
   outline: none;
 }
 
-.form-input:focus {
+.textarea-input {
+  min-height: 76px;
+  padding-top: 12px;
+  resize: none;
+  line-height: 1.5;
+}
+
+.form-input:focus,
+.textarea-input:focus {
   border-color: var(--medical-blue);
   box-shadow: 0 0 0 3px rgba(47, 128, 209, 0.12);
 }
