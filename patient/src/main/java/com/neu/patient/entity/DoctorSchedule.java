@@ -21,6 +21,7 @@ public class DoctorSchedule {
     private Integer remainQuota;
     private BigDecimal registrationFee;
     private String status;
+    private String source;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
@@ -46,6 +47,8 @@ public class DoctorSchedule {
     public void setRegistrationFee(BigDecimal registrationFee) { this.registrationFee = registrationFee; }
     public String getStatus() { return status; }
     public void setStatus(String status) { this.status = status; }
+    public String getSource() { return source; }
+    public void setSource(String source) { this.source = source; }
     public LocalDateTime getCreatedAt() { return createdAt; }
     public void setCreatedAt(LocalDateTime createdAt) { this.createdAt = createdAt; }
     public LocalDateTime getUpdatedAt() { return updatedAt; }

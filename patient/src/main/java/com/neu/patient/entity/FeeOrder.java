@@ -14,6 +14,7 @@ public class FeeOrder {
     private String orderNo;
     private Long patientId;
     private Long registrationId;
+    private Long visitId;
     private String businessType;
     private Long businessId;
     private BigDecimal totalAmount;
@@ -35,6 +36,8 @@ public class FeeOrder {
     public void setPatientId(Long patientId) { this.patientId = patientId; }
     public Long getRegistrationId() { return registrationId; }
     public void setRegistrationId(Long registrationId) { this.registrationId = registrationId; }
+    public Long getVisitId() { return visitId; }
+    public void setVisitId(Long visitId) { this.visitId = visitId; }
     public String getBusinessType() { return businessType; }
     public void setBusinessType(String businessType) { this.businessType = businessType; }
     public Long getBusinessId() { return businessId; }

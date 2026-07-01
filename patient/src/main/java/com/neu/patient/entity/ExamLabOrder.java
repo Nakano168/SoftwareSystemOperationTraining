@@ -17,6 +17,11 @@ public class ExamLabOrder {
     private String orderType;
     private String clinicalDiagnosis;
     private String purpose;
+    private String examSite;
+    private String specimenType;
+    private String remark;
+    private String priority;
+    private String collectionWay;
     private java.math.BigDecimal totalAmount;
     private String feeStatus;
     private String status;
@@ -46,6 +51,16 @@ public class ExamLabOrder {
     public void setClinicalDiagnosis(String clinicalDiagnosis) { this.clinicalDiagnosis = clinicalDiagnosis; }
     public String getPurpose() { return purpose; }
     public void setPurpose(String purpose) { this.purpose = purpose; }
+    public String getExamSite() { return examSite; }
+    public void setExamSite(String examSite) { this.examSite = examSite; }
+    public String getSpecimenType() { return specimenType; }
+    public void setSpecimenType(String specimenType) { this.specimenType = specimenType; }
+    public String getRemark() { return remark; }
+    public void setRemark(String remark) { this.remark = remark; }
+    public String getPriority() { return priority; }
+    public void setPriority(String priority) { this.priority = priority; }
+    public String getCollectionWay() { return collectionWay; }
+    public void setCollectionWay(String collectionWay) { this.collectionWay = collectionWay; }
     public java.math.BigDecimal getTotalAmount() { return totalAmount; }
     public void setTotalAmount(java.math.BigDecimal totalAmount) { this.totalAmount = totalAmount; }
     public String getFeeStatus() { return feeStatus; }
